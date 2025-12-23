@@ -1,0 +1,93 @@
+/* FORM CARD */
+.product-form-card {
+  max-width: 460px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* TITLE (OPTIONAL) */
+.product-form-card::before {
+  content: "Add New Product";
+  font-size: 22px;
+  font-weight: 700;
+  color: #2f855a;
+  margin-bottom: 6px;
+}
+
+/* LABEL */
+.product-form-card label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* INPUT */
+.product-form-card input[type="text"],
+.product-form-card input[type="number"] {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 15px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.product-form-card input:focus {
+  outline: none;
+  border-color: #38a169;
+  box-shadow: 0 0 0 2px rgba(56, 161, 105, 0.2);
+}
+
+/* FILE INPUT */
+.product-form-card input[type="file"] {
+  font-size: 14px;
+}
+
+/* ERROR MESSAGE */
+.error {
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: -6px;
+}
+
+/* IMAGE PREVIEW */
+.product-img-newww {
+  margin-top: 8px;
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}
+
+/* SUBMIT BUTTON */
+.product-form-card button {
+  margin-top: 12px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #38a169, #2f855a);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.product-form-card button:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 500px) {
+  .product-form-card {
+    margin: 20px;
+    padding: 20px;
+  }
+}

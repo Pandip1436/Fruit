@@ -1,0 +1,412 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cart-btn {
+  position: relative;
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  background: #15803d;
+  padding: 8px 14px;
+  border-radius: 20px;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.cart-btn:hover {
+  background: #166534;
+  transform: scale(1.05);
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  color: white;
+  position: relative;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+}
+
+/* DESKTOP MENU */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+}
+
+/* CART */
+.cart-btn {
+  position: relative;
+  background: #15803d;
+  padding: 8px 14px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: white;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+/* HAMBURGER */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.hamburger span {
+  width: 26px;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #16a34a;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 0;
+    display: none;
+  }
+
+  .nav-menu.active {
+    display: flex;
+  }
+
+  .nav-item,
+  .cart-btn {
+    width: 90%;
+    text-align: center;
+  }
+}
+.user-name {
+  font-weight: 600;
+  color: white;
+  margin-left: 10px;
+}
+
+.logout-btn {
+  margin-left: 10px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: none;
+  background: #dc2626;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  opacity: 0.9;
+}
+/* USER INFO */
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+  background: #dc2626;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  opacity: 0.9;
+}
+
+/* AUTH LINKS */
+.auth-links {
+  display: flex;
+  gap: 10px;
+}
+/* PROFILE */
+.profile-wrapper {
+  position: relative;
+}
+
+.profile-icon {
+  font-size: 22px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+}
+
+/* DROPDOWN */
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background: white;
+  width: 160px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  padding: 12px;
+  z-index: 999;
+}
+
+.profile-name {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #111827;
+}
+.nav-item1 {
+  text-decoration: none;
+  color: rgb(37, 35, 35);
+  font-weight: 500;
+  margin-bottom:10px;
+  margin-top: 10px;
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+  width: 90%;
+  background: #dc2626;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.logout-btn:hover {
+  opacity: 0.9;
+}
+.admin-btn {
+  background: #111827;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+/* NAVBAR */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgb(25, 231, 111);
+  padding: 14px 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+  color: #f1f8f4;
+}
+
+/* MENU */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #000000;
+  font-weight: 500;
+}
+
+.nav-item.active {
+  color: #2f00ff;
+}
+
+/* CART */
+.cart-btn {
+  position: relative;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.cart-badge {
+  background: #dc2626;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  margin-left: 4px;
+}
+
+/* ADMIN */
+.admin-btn {
+  background: #2563eb;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+/* PROFILE */
+.profile-wrapper {
+  position: relative;
+}
+
+.profile-icon {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 34px;
+  background: white;
+  padding: 14px;
+  border-radius: 12px;
+  width: 160px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.profile-name {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.nav-item1 {
+  display: block;
+  margin-bottom: 8px;
+  text-decoration: none;
+}
+
+.logout-btn {
+  width: 100%;
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+/* HAMBURGER */
+.hamburger {
+  display: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .nav-menu {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: rgb(255, 255, 255);
+    flex-direction: column;
+    width: 220px;
+    padding: 20px;
+    gap: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    display: none;
+  }
+
+  .nav-menu.open {
+    display: flex;
+  }
+}
+

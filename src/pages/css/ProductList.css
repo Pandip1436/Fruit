@@ -1,0 +1,102 @@
+/* PAGE */
+.product-list-page {
+  padding: 24px;
+  background: #f6f8fb;
+  min-height: calc(100vh - 70px);
+}
+
+/* CONTROLS BAR */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+/* INPUT */
+.controls input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.controls input:focus {
+  outline: none;
+  border-color: #38a169;
+  box-shadow: 0 0 0 2px rgba(56, 161, 105, 0.2);
+}
+
+/* SELECT */
+.controls select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ADD PRODUCT BUTTON */
+.add-btn {
+  background: linear-gradient(90deg, #38a169, #2f855a);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.add-link {
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* CLEAR BUTTON */
+.clear-btn {
+  background: #e53e3e;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clear-btn:hover {
+  opacity: 0.9;
+}
+
+/* EMPTY STATE */
+.product-list-page p {
+  text-align: center;
+  color: #64748b;
+  margin-top: 40px;
+  font-size: 16px;
+}
+
+/* PRODUCT ITEM SPACING */
+.product-item {
+  margin-bottom: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .controls input,
+  .controls select,
+  .add-btn,
+  .clear-btn {
+    width: 100%;
+  }
+}

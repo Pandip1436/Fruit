@@ -1,0 +1,440 @@
+
+/* =========================
+   Mobile Responsive Styles
+========================= */
+
+@media (max-width: 768px) {
+
+  .product-card-new {
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+  }
+
+  .product-img-new {
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+  .product-details {
+    width: 100%;
+    text-align: center;
+  }
+
+  .product-header {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .price {
+    font-size: 16px;
+  }
+
+  .qty {
+    font-size: 14px;
+    margin: 6px 0;
+  }
+
+  .product-actions-new {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .product-actions-new button {
+    flex: 1 1 45%;
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* =========================
+   ProductList Controls
+========================= */
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+/* =========================
+   Mobile Responsive
+========================= */
+
+@media (max-width: 768px) {
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .controls input,
+  .controls select,
+  .controls button {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .controls button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+  }
+
+  .controls button:hover {
+    opacity: 0.9;
+  }
+}
+
+/* =========================
+   Empty State
+========================= */
+
+@media (max-width: 768px) {
+  p {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 20px;
+  }
+}
+
+/* =========================
+   Header Base Styles
+========================= */
+
+.header-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: #1f2937;
+  color: #fff;
+}
+
+.project-title {
+  font-size: 22px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  position: relative;
+}
+
+/* Cart Badge */
+.cart-link {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: red;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+/* =========================
+   Mobile Responsive
+========================= */
+
+@media (max-width: 768px) {
+
+  .header-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .project-title {
+    font-size: 18px;
+  }
+
+  .nav-links {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+  }
+
+  .cart-badge {
+    top: -4px;
+    right: -8px;
+  }
+}
+
+/* =========================
+   Products Page Layout
+========================= */
+
+.page {
+  padding: 20px;
+}
+
+.page h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* =========================
+   Shop Grid (Desktop)
+========================= */
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+/* =========================
+   Mobile Responsive
+========================= */
+
+@media (max-width: 768px) {
+
+  .page {
+    padding: 12px;
+  }
+
+  .page h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .shop-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* =========================
+   Small Phones (≤480px)
+========================= */
+
+@media (max-width: 480px) {
+
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   Empty State
+========================= */
+
+.page p {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 30px;
+}
+
+
+/* =========================
+   Shop Product Card
+========================= */
+
+.shop-card {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
+.shop-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Product Image */
+.shop-card-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+/* Card Body */
+.shop-card-body {
+  padding: 12px;
+  text-align: center;
+}
+
+.shop-card-body h4 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+/* Price & Stock */
+.shop-price {
+  font-weight: bold;
+  color: #16a34a;
+  margin-bottom: 4px;
+}
+
+.shop-stock {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* Add to Cart Button */
+.shop-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.shop-btn:hover {
+  background: #1d4ed8;
+}
+
+/* =========================
+   Mobile Responsive
+========================= */
+
+@media (max-width: 768px) {
+
+  .shop-card-img {
+    height: 150px;
+  }
+
+  .shop-card-body h4 {
+    font-size: 15px;
+  }
+
+  .shop-btn {
+    font-size: 13px;
+    padding: 9px;
+  }
+}
+
+/* =========================
+   Small Phones
+========================= */
+
+@media (max-width: 480px) {
+
+  .shop-card-img {
+    height: 140px;
+  }
+
+  .shop-card-body {
+    padding: 10px;
+  }
+}
+
+/* =========================
+   Cart Page
+========================= */
+
+.page h2 {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+/* Cart Item Card (reuse product card) */
+.page .product-card-new {
+  margin-bottom: 14px;
+}
+
+/* =========================
+   Mobile Responsive
+========================= */
+
+@media (max-width: 768px) {
+
+  .page .product-card-new {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .page .product-img-new {
+    width: 100%;
+    max-width: 180px;
+    margin: 0 auto 10px;
+  }
+
+  .page .product-details {
+    width: 100%;
+  }
+
+  .page .product-details h4 {
+    font-size: 16px;
+  }
+
+  .page .product-details p {
+    font-size: 14px;
+    margin: 4px 0;
+  }
+
+  .page .delete-btn {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+  }
+
+  .page h3 {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 18px;
+  }
+
+  .page a button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 15px;
+  }
+}
+
+/* =========================
+   Small Phones
+========================= */
+
+@media (max-width: 480px) {
+
+  .page .product-img-new {
+    max-width: 150px;
+  }
+
+  .page h3 {
+    font-size: 16px;
+  }
+}
