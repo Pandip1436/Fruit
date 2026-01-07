@@ -1,13 +1,17 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
-import "../pages/css/AdminDashboard.css"
-
+import {
+  fetchUsers,
+  addUser,
+  updateUser,
+  deleteUser
+} from "../services/api";
 
 function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
-  const [editEmail, setEditEmail] = useState(null);
+  const [editId, setEditId] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -17,20 +21,19 @@ function AdminUsers() {
     confirmPassword: ""
   });
 
-  // LOAD USERS
+  /* ---------------- LOAD USERS ---------------- */
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("users")) || [];
-    setUsers(data);
+    fetchUsers().then(setUsers);
   }, []);
 
-  // HANDLE INPUT
+  /* ---------------- HANDLE INPUT ---------------- */
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError("");
   };
 
-  // ADD USER
-  const addUser = e => {
+  /* ---------------- ADD USER ---------------- */
+  const handleAddUser = async e => {
     e.preventDefault();
 
     if (!form.name || !form.email || !form.password || !form.confirmPassword) {
@@ -48,30 +51,20 @@ function AdminUsers() {
       return;
     }
 
-    const exists = users.find(u => u.email === form.email);
-    if (exists) {
-      setError("Email already exists");
-      return;
-    }
+    const newUser = await addUser({
+      name: form.name,
+      email: form.email,
+      role: form.role,
+      password: form.password
+    });
 
-    const updatedUsers = [
-      ...users,
-      {
-        name: form.name,
-        email: form.email,
-        role: form.role,
-        password: form.password
-      }
-    ];
-
-    setUsers(updatedUsers);
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
+    setUsers([...users, newUser]);
     resetForm();
   };
 
-  // EDIT USER (LOAD DATA)
-  const editUser = user => {
-    setEditEmail(user.email);
+  /* ---------------- EDIT USER ---------------- */
+  const editUserHandler = user => {
+    setEditId(user._id);
     setForm({
       name: user.name,
       email: user.email,
@@ -81,8 +74,8 @@ function AdminUsers() {
     });
   };
 
-  // UPDATE USER
-  const updateUser = e => {
+  /* ---------------- UPDATE USER ---------------- */
+  const handleUpdateUser = async e => {
     e.preventDefault();
 
     if (!form.name) {
@@ -90,42 +83,34 @@ function AdminUsers() {
       return;
     }
 
-    if (form.password) {
-      if (form.password.length < 6) {
-        setError("Password must be at least 6 characters");
-        return;
-      }
-      if (form.password !== form.confirmPassword) {
-        setError("Passwords do not match");
-        return;
-      }
+    if (form.password && form.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
     }
 
-    const updatedUsers = users.map(user =>
-      user.email === editEmail
-        ? {
-            ...user,
-            name: form.name,
-            role: form.role,
-            password: form.password ? form.password : user.password
-          }
-        : user
-    );
+    if (form.password && form.password !== form.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
 
-    setUsers(updatedUsers);
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
+    const updated = await updateUser(editId, {
+      name: form.name,
+      role: form.role,
+      ...(form.password && { password: form.password })
+    });
+
+    setUsers(users.map(u => (u._id === updated._id ? updated : u)));
     resetForm();
   };
 
-  // DELETE USER
-  const deleteUser = email => {
-    const updated = users.filter(u => u.email !== email);
-    setUsers(updated);
-    localStorage.setItem("users", JSON.stringify(updated));
+  /* ---------------- DELETE USER ---------------- */
+  const handleDeleteUser = async id => {
+    await deleteUser(id);
+    setUsers(users.filter(u => u._id !== id));
   };
 
   const resetForm = () => {
-    setEditEmail(null);
+    setEditId(null);
     setForm({
       name: "",
       email: "",
@@ -136,7 +121,7 @@ function AdminUsers() {
     setError("");
   };
 
-  // SEARCH FILTER
+  /* ---------------- FILTER ---------------- */
   const filteredUsers = users.filter(
     u =>
       u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -144,77 +129,113 @@ function AdminUsers() {
   );
 
   return (
-    <>
-      <h2>👤 User Management</h2>
+    <div className="min-h-screen bg-gray-50 p-3">
+      <h2 className="text-2xl font-bold mb-6">
+        👤 User Management
+      </h2>
 
-      <div className="user-layout">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
         {/* LEFT – USER LIST */}
-        <div className="user-list-panel">
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-md p-4">
           <input
-            className="admin-search"
             placeholder="Search users..."
             value={search}
             onChange={e => setSearch(e.target.value)}
+            className="w-full border rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
 
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredUsers.map(user => (
-                <tr key={user.email}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.role}</td>
-                  <td>
-                    <button
-                      className="edit-btn"
-                      onClick={() => editUser(user)}
-                    >
-                      Edit
-                    </button>
-                    {user.role !== "admin" && (
-                      <button
-                        className="danger-btn"
-                        onClick={() => deleteUser(user.email)}
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-2 text-left text-sm font-semibold">
+                    S.No
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold">
+                    Name
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold">
+                    Email
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold">
+                    Role
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-semibold">
+                    Action
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {filteredUsers.map((user, index) => (
+                  <tr
+                    key={user._id}
+                    className="border-t hover:bg-gray-50 transition"
+                  >
+                    {/* SERIAL NUMBER */}
+                    <td className="px-4 py-2 font-medium">
+                      {index + 1}
+                    </td>
+
+                    <td className="px-4 py-2">{user.name}</td>
+                    <td className="px-4 py-2">{user.email}</td>
+                    <td className="px-4 py-2 capitalize">{user.role}</td>
+                    <td className="px-4 py-2 space-x-2">
+                      <button
+                        onClick={() => editUserHandler(user)}
+                        className="text-blue-600 hover:underline"
+                      >
+                        Edit
+                      </button>
+
+                      {user.role !== "admin" && (
+                        <button
+                          onClick={() => handleDeleteUser(user._id)}
+                          className="text-red-600 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* RIGHT – ADD / EDIT USER */}
-        <div className="add-user-panel">
-          <h3>{editEmail ? "Edit User" : "Add User"}</h3>
+        <div className="bg-white rounded-xl p-4 shadow-md">
+          <h3 className="text-xl font-semibold mb-4">
+            {editId ? "✏️ Edit User" : "➕ Add User"}
+          </h3>
 
-          {error && <p className="error">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm mb-3">
+              {error}
+            </p>
+          )}
 
-          <form onSubmit={editEmail ? updateUser : addUser}>
+          <form
+            onSubmit={editId ? handleUpdateUser : handleAddUser}
+            className="space-y-3"
+          >
             <input
               name="name"
               placeholder="User Name"
               value={form.name}
               onChange={handleChange}
+              className="w-full border rounded-md px-3 py-2"
             />
 
-            {!editEmail && (
+            {!editId && (
               <input
                 name="email"
                 placeholder="Email Address"
                 value={form.email}
                 onChange={handleChange}
+                className="w-full border rounded-md px-3 py-2"
               />
             )}
 
@@ -222,6 +243,7 @@ function AdminUsers() {
               name="role"
               value={form.role}
               onChange={handleChange}
+              className="w-full border rounded-md px-3 py-2"
             >
               <option value="user">User</option>
               <option value="admin">Admin</option>
@@ -230,9 +252,10 @@ function AdminUsers() {
             <input
               type="password"
               name="password"
-              placeholder={editEmail ? "New Password (optional)" : "Password"}
+              placeholder={editId ? "New Password (optional)" : "Password"}
               value={form.password}
               onChange={handleChange}
+              className="w-full border rounded-md px-3 py-2"
             />
 
             <input
@@ -241,17 +264,21 @@ function AdminUsers() {
               placeholder="Confirm Password"
               value={form.confirmPassword}
               onChange={handleChange}
+              className="w-full border rounded-md px-3 py-2"
             />
 
-            <button type="submit">
-              {editEmail ? "Update User" : "Add User"}
+            <button
+              type="submit"
+              className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition"
+            >
+              {editId ? "Update User" : "Add User"}
             </button>
 
-            {editEmail && (
+            {editId && (
               <button
                 type="button"
-                className="cancel-btn"
                 onClick={resetForm}
+                className="w-full bg-gray-200 py-2 rounded-md hover:bg-gray-300 transition"
               >
                 Cancel
               </button>
@@ -259,7 +286,7 @@ function AdminUsers() {
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

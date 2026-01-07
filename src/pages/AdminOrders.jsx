@@ -1,38 +1,42 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "../pages/css/AdminDashboard.css";
+import { fetchOrders, updateOrderStatus } from "../services/api";
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
 
+  /* ---------------- LOAD ORDERS FROM BACKEND ---------------- */
   useEffect(() => {
-    setOrders(JSON.parse(localStorage.getItem("orders")) || []);
+    fetchOrders().then(setOrders);
   }, []);
 
-  const updateStatus = (id, status) => {
-    const updated = orders.map(o =>
-      o.id === id ? { ...o, status } : o
+  /* ---------------- UPDATE STATUS ---------------- */
+  const updateStatus = async (id, status) => {
+    await updateOrderStatus(id, status);
+    setOrders(prev =>
+      prev.map(o => (o._id === id ? { ...o, status } : o))
     );
-    setOrders(updated);
-    localStorage.setItem("orders", JSON.stringify(updated));
   };
 
+  /* ---------------- SEARCH ---------------- */
   const filteredOrders = orders.filter(
     o =>
       o.user.toLowerCase().includes(search.toLowerCase()) ||
-      o.id.toString().includes(search)
+      o._id.toString().includes(search)
   );
 
   return (
-    <div className="admin-orders-page">
-      <h2 className="page-title">📦 Orders Management</h2>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <h2 className="text-2xl font-bold mb-6">
+        📦 Orders Management
+      </h2>
 
       {/* SEARCH */}
-      <div className="admin-toolbar">
+      <div className="mb-6 max-w-md">
         <input
-          className="admin-search"
+          className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
           placeholder="Search by order ID or user email..."
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -41,36 +45,77 @@ function AdminOrders() {
 
       {/* TABLE */}
       {filteredOrders.length === 0 ? (
-        <div className="empty-state">
-          <p>No orders found</p>
+        <div className="bg-white rounded-xl shadow-md p-8 text-center">
+          <p className="text-gray-600 text-lg">
+            No orders found
+          </p>
         </div>
       ) : (
-        <div className="admin-table-card">
-          <table className="admin-table">
-            <thead>
+        <div className="bg-white rounded-xl shadow-md overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-100">
               <tr>
-                <th>Order ID</th>
-                <th>User</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Details</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">
+                  S.No
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">
+                  Order ID
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">
+                  User
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">
+                  Total
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">
+                  Details
+                </th>
               </tr>
             </thead>
 
             <tbody>
-              {filteredOrders.map(order => (
-                <tr key={order.id}>
-                  <td>#{order.id}</td>
-                  <td>{order.user}</td>
-                  <td className="price">₹{order.total}</td>
+              {filteredOrders.map((order, index) => (
+                <tr
+                  key={order._id}
+                  className="border-t hover:bg-gray-50 transition"
+                >
+                  {/* SERIAL NUMBER */}
+                  <td className="px-4 py-3 font-medium">
+                    {index + 1}
+                  </td>
 
-                  <td>
+                  <td className="px-4 py-3 font-medium">
+                    #{order._id}
+                  </td>
+
+                  <td className="px-4 py-3 text-gray-700">
+                    {order.user}
+                  </td>
+
+                  <td className="px-4 py-3 font-semibold text-green-700">
+                    ₹{order.total}
+                  </td>
+
+                  <td className="px-4 py-3">
                     <select
-                      className={`status-select ${order.status.toLowerCase()}`}
                       value={order.status}
                       onChange={e =>
-                        updateStatus(order.id, e.target.value)
+                        updateStatus(order._id, e.target.value)
                       }
+                      className={`px-3 py-1 rounded-md text-sm font-medium border focus:outline-none
+                        ${
+                          order.status === "Pending"
+                            ? "bg-yellow-100 text-yellow-700 border-yellow-300"
+                            : order.status === "Shipped"
+                            ? "bg-blue-100 text-blue-700 border-blue-300"
+                            : order.status === "Delivered"
+                            ? "bg-green-100 text-green-700 border-green-300"
+                            : "bg-red-100 text-red-700 border-red-300"
+                        }
+                      `}
                     >
                       <option>Pending</option>
                       <option>Shipped</option>
@@ -79,10 +124,10 @@ function AdminOrders() {
                     </select>
                   </td>
 
-                  <td>
+                  <td className="px-4 py-3">
                     <Link
-                      to={`/admin/orders/${order.id}`}
-                      className="view-btn"
+                      to={`/admin/orders/${order._id}`}
+                      className="text-green-600 hover:underline font-medium"
                     >
                       View
                     </Link>

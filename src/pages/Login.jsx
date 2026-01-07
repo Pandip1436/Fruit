@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../pages/css/Auth.css";
+import { loginUser } from "../services/api";
 
 function Login() {
   const [form, setForm] = useState({
@@ -19,32 +19,20 @@ function Login() {
 
   const validate = () => {
     const newErrors = {};
-
-    if (!form.email) {
-      newErrors.email = "Email is required";
-    }
-
-    if (!form.password) {
-      newErrors.password = "Password is required";
-    }
-
+    if (!form.email) newErrors.email = "Email is required";
+    if (!form.password) newErrors.password = "Password is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!validate()) return;
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const user = await loginUser(form);
 
-    const user = users.find(
-      u => u.email === form.email && u.password === form.password
-    );
-
-    if (!user) {
+    if (user.message) {
       setToast("❌ Invalid email or password");
-      setTimeout(() => setToast(""), 3000);
       return;
     }
 
@@ -52,44 +40,89 @@ function Login() {
     setToast("✅ Login successful");
 
     setTimeout(() => {
-      setToast("");
       navigate("/");
       window.location.reload();
-    }, 1500);
-    
+    }, 1000);
   };
 
   return (
-    <div className="auth-page">
-      {toast && <div className="toast-success">{toast}</div>}
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center px-4">
 
-      <div className="auth-card">
-        <h2>🍎 My Fruits Shop</h2>
-        <p>Login to your account</p>
+      {/* TOAST */}
+      {toast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow z-50">
+          {toast}
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit}>
-          <input
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-          />
-          {errors.email && <small className="error">{errors.email}</small>}
+      {/* CARD */}
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 sm:p-8">
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-          />
-          {errors.password && <small className="error">{errors.password}</small>}
+        {/* HEADER */}
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-green-700">
+            🍎 My Fruits Shop
+          </h2>
+          <p className="text-gray-600 mt-1">
+            Login to your account
+          </p>
+        </div>
 
-          <button type="submit">Login</button>
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* EMAIL */}
+          <div>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email address"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email}
+              </p>
+            )}
+          </div>
+
+          {/* PASSWORD */}
+          <div>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password}
+              </p>
+            )}
+          </div>
+
+          {/* BUTTON */}
+          <button
+            type="submit"
+            className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+          >
+            Login
+          </button>
         </form>
 
-        <p className="auth-footer">
-          Don’t have an account? <Link to="/register">Register</Link>
+        {/* FOOTER */}
+        <p className="text-center text-sm text-gray-600 mt-6">
+          Don’t have an account?{" "}
+          <Link
+            to="/register"
+            className="text-green-600 font-medium hover:underline"
+          >
+            Register
+          </Link>
         </p>
       </div>
     </div>

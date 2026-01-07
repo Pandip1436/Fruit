@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
-import "../pages/css/AdminDashboard.css"
+import { fetchAdminStats } from "../services/api";
 
 function AdminHome() {
   const [stats, setStats] = useState({
@@ -11,49 +11,57 @@ function AdminHome() {
   });
 
   useEffect(() => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const products = JSON.parse(localStorage.getItem("products")) || [];
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-
-    const revenue = orders.reduce(
-      (sum, order) => sum + (order.total || 0),
-      0
-    );
-
-    setStats({
-      users: users.length,
-      products: products.length,
-      orders: orders.length,
-      revenue
-    });
+    fetchAdminStats().then(setStats);
   }, []);
 
   return (
-    <>
-      <h2>📊 Dashboard Overview</h2>
+    <div>
+      <h2 className="text-2xl font-bold mb-6">
+        📊 Dashboard Overview
+      </h2>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h3>Total Users</h3>
-          <p>{stats.users}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 font-bold">
+        {/* USERS */}
+        <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+          <h3 className="text-gray-500 text-sm">
+            Total Users
+          </h3>
+          <p className="text-3xl font-bold text-blue-600 mt-2">
+            {stats.users}
+          </p>
         </div>
 
-        <div className="stat-card">
-          <h3>Total Products</h3>
-          <p>{stats.products}</p>
+        {/* PRODUCTS */}
+        <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+          <h3 className="text-gray-500 text-sm">
+            Total Products
+          </h3>
+          <p className="text-3xl font-bold text-green-600 mt-2">
+            {stats.products}
+          </p>
         </div>
 
-        <div className="stat-card">
-          <h3>Total Orders</h3>
-          <p>{stats.orders}</p>
+        {/* ORDERS */}
+        <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+          <h3 className="text-gray-500 text-sm">
+            Total Orders
+          </h3>
+          <p className="text-3xl font-bold text-purple-600 mt-2">
+            {stats.orders}
+          </p>
         </div>
 
-        <div className="stat-card">
-          <h3>Total Revenue</h3>
-          <p>₹{stats.revenue}</p>
+        {/* REVENUE */}
+        <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+          <h3 className="text-gray-500 text-sm">
+            Total Revenue
+          </h3>
+          <p className="text-3xl font-bold text-orange-600 mt-2">
+            ₹{stats.revenue}
+          </p>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -2,9 +2,16 @@ import ProductForm from "../components/ProductForm";
 
 function AddProduct({ products, setProducts, showToast }) {
   return (
-    <div className="page">
-      <center><h2>Add Product</h2>
-      <ProductForm products={products} setProducts={setProducts}  showToast={showToast} /></center>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-xl">
+       
+
+        <ProductForm
+          products={products}
+          setProducts={setProducts}
+          showToast={showToast}
+        />
+      </div>
     </div>
   );
 }

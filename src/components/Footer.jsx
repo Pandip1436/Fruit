@@ -1,61 +1,82 @@
 import { Link } from "react-router-dom";
-import "../pages/css/Footer.css";
 
 function Footer() {
   return (
-    <footer className="footer">
-      <div className="footer-container">
+    <footer className="bg-gray-900 text-gray-300 mt-16">
+
+      {/* MAIN FOOTER */}
+      <div className="max-w-7xl mx-auto px-6 py-15 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
         {/* BRAND */}
-        <div className="footer-col">
-          <h2 className="footer-logo">🍎 FRUITS SHOP</h2>
-          <p className="footer-text">
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-4">
+            🍎 FRUITS SHOP
+          </h2>
+
+          <p className="text-sm leading-relaxed mb-4">
             The customer is at the heart of our business model,
             which includes fresh fruits and quality service.
           </p>
 
-          <div className="social-icons">
-            <i className="fab fa-facebook-f"></i>
-            <i className="fab fa-twitter"></i>
-            <i className="fab fa-instagram"></i>
-            <i className="fab fa-pinterest-p"></i>
-            <i className="fab fa-youtube"></i>
+          <div className="flex gap-4 text-lg">
+            <i className="fab fa-facebook-f hover:text-white cursor-pointer"></i>
+            <i className="fab fa-twitter hover:text-white cursor-pointer"></i>
+            <i className="fab fa-instagram hover:text-white cursor-pointer"></i>
+            <i className="fab fa-pinterest-p hover:text-white cursor-pointer"></i>
+            <i className="fab fa-youtube hover:text-white cursor-pointer"></i>
           </div>
         </div>
 
         {/* QUICK LINKS */}
-        <div className="footer-col">
-          <h3>QUICK LINKS</h3>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-          <Link to="/">Products</Link>
-          <Link to="/contact">Contact</Link>
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">
+            QUICK LINKS
+          </h3>
+
+          <ul className="space-y-2 text-sm">
+            <li><Link to="/" className="hover:text-white">Home</Link></li>
+            <li><Link to="/about" className="hover:text-white">About</Link></li>
+            <li><Link to="/products" className="hover:text-white">Products</Link></li>
+            <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
+          </ul>
         </div>
 
         {/* HELP & INFO */}
-        <div className="footer-col">
-          <h3>HELP & INFO</h3>
-          <Link to="/cart">Track Your Order</Link>
-          <Link to="/cart">Returns & Exchanges</Link>
-          <Link to="/cart">Shipping & Delivery</Link>
-          <Link to="/cart">FAQst</Link>
-          
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">
+            HELP & INFO
+          </h3>
+
+          <ul className="space-y-2 text-sm">
+            <li><Link to="/cart" className="hover:text-white">Track Your Order</Link></li>
+            <li><Link to="/cart" className="hover:text-white">Returns & Exchanges</Link></li>
+            <li><Link to="/cart" className="hover:text-white">Shipping & Delivery</Link></li>
+            <li><Link to="/cart" className="hover:text-white">FAQs</Link></li>
+          </ul>
         </div>
 
         {/* CONTACT */}
-        <div className="footer-col">
-          <h3>CONTACT US</h3>
-          <p>Do you have any questions?</p>
-          <p className="contact-email">support@myfruitsshop.com</p>
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">
+            CONTACT US
+          </h3>
 
-          <p className="contact-phone">
+          <p className="text-sm mb-2">
+            Do you have any questions?
+          </p>
+
+          <p className="text-sm text-green-400 mb-2 break-all">
+            support@myfruitsshop.com
+          </p>
+
+          <p className="text-sm">
             📞 +91 80565 64775
           </p>
         </div>
       </div>
 
-      {/* BOTTOM */}
-      <div className="footer-bottom">
+      {/* BOTTOM BAR */}
+      <div className="border-t border-gray-700 py-4 text-center text-sm text-gray-400">
         © {new Date().getFullYear()} My Fruits Shop. All rights reserved.
       </div>
     </footer>

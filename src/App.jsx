@@ -22,6 +22,9 @@ import AdminHome from "./pages/AdminHome";
 import AdminOrderDetails from "./pages/AdminOrderDetails";
 import UserOrders from "./pages/UserOrders";
 import UserOrderDetails from "./pages/UserOrderDetails";
+import Landing from "./pages/Landing";
+import { fetchProducts } from "../src/services/api";
+
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -35,15 +38,11 @@ function App() {
   }, [cart]);
 
   // 🔹 LOAD FROM LOCALSTORAGE
- useEffect(() => {
-    const saved = localStorage.getItem("products");
 
-    if (saved) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setProducts(JSON.parse(saved));
-    } 
-    
-  }, []);
+useEffect(() => {
+  fetchProducts().then(data => setProducts(data));
+}, []);
+
 
   // SAVE to localStorage on every update
   useEffect(() => {
@@ -97,9 +96,22 @@ function App() {
             
 
         </Route>
+
+        <Route
+              path="/"
+              element={
+                <Landing
+                  cart={cart}
+                  setCart={setCart}
+                  showToast={showToast}
+                />
+              }
+        />
+
+
         
          <Route
-              path="/" 
+              path="/products" 
              element={
                       <Products
                          products={products}

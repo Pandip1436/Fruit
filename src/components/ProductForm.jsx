@@ -1,8 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import "../pages/css/ProductForm.css";
-
+import { addProduct } from "../services/api";
 
 function ProductForm({ products, setProducts, showToast }) {
   const nameRef = useRef(null);
@@ -47,70 +46,126 @@ function ProductForm({ products, setProducts, showToast }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!validate()) return;
 
-    const newProduct = {
-      id: Date.now(),
-      name: form.name,
-      quantity: Number(form.quantity),
-      price: Number(form.price),
-      image: form.image
-    };
-
+    const newProduct = await addProduct(form);
     setProducts([...products, newProduct]);
 
-    //  TOAST
     showToast("✅ Product added successfully", "success");
 
-    // RESET FORM
     setForm({ name: "", quantity: "", price: "", image: "" });
     nameRef.current.focus();
 
-    //  REDIRECT TO PRODUCT LIST
     navigate("/admin/productlist");
   };
 
   return (
-    <form className="product-form-card" onSubmit={handleSubmit}>
-      <label>Product Name</label>
-      <input
-        ref={nameRef}
-        name="name"
-        value={form.name}
-        onChange={handleChange}
-      />
-      {errors.name && <small className="error">{errors.name}</small>}
+    <div className="max-w-lg mx-auto bg-white rounded-xl shadow-md p-6">
+      <h2 className="text-xl font-bold mb-6 ">
+        ➕ Add New Product
+      </h2>
 
-      <label>Quantity</label>
-      <input
-        type="number"
-        name="quantity"
-        value={form.quantity}
-        onChange={handleChange}
-      />
-      {errors.quantity && <small className="error">{errors.quantity}</small>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* PRODUCT NAME */}
+        <div>
+          <label className="block mb-1 font-medium">
+            Product Name
+          </label>
+          <input
+            ref={nameRef}
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          {errors.name && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.name}
+            </p>
+          )}
+        </div>
 
-      <label>Price</label>
-      <input
-        type="number"
-        name="price"
-        value={form.price}
-        onChange={handleChange}
-      />
-      {errors.price && <small className="error">{errors.price}</small>}
+        {/* QUANTITY */}
+        <div>
+          <label className="block mb-1 font-medium">
+            Quantity
+          </label>
+          <input
+            type="number"
+            name="quantity"
+            value={form.quantity}
+            onChange={handleChange}
+            className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          {errors.quantity && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.quantity}
+            </p>
+          )}
+        </div>
 
-      <label>Product Image</label>
-      <input type="file" accept="image/*" onChange={handleImage} />
-      {errors.image && <small className="error">{errors.image}</small>}
+        {/* PRICE */}
+        <div>
+          <label className="block mb-1 font-medium">
+            Price (₹)
+          </label>
+          <input
+            type="number"
+            name="price"
+            value={form.price}
+            onChange={handleChange}
+            className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          {errors.price && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.price}
+            </p>
+          )}
+        </div>
 
-      {form.image && (
-        <img src={form.image} alt="preview" className="product-img-newww" />
-      )}
+        {/* IMAGE */}
+        <div>
+          <label className="block mb-1 font-medium">
+            Product Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImage}
+            className="w-full border rounded-md px-3 py-2 bg-white"
+          />
+          {errors.image && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.image}
+            </p>
+          )}
+        </div>
 
-      <button type="submit">Add Product</button>
-    </form>
+        {/* IMAGE PREVIEW */}
+        {form.image && (
+          <div className="mt-3">
+            <p className="text-sm text-gray-500 mb-1">
+              Image Preview
+            </p>
+            <img
+              src={form.image}
+              alt="preview"
+              className="w-full h-48 object-cover rounded-md border"
+            />
+          </div>
+        )}
+
+        {/* SUBMIT */}
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition"
+        >
+          Add Product
+        </button>
+      </form>
+    </div>
   );
 }
 

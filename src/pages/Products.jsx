@@ -1,25 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import ProductCardShop from "../components/ProductCardShop";
-// import "../pages/css/Products.css"
+import { fetchProducts } from "../services/api";
 
-function Products({ products, cart, setCart, showToast }) {
-  /* -------------------- STATE -------------------- */
+function Products({ cart, setCart, showToast }) {
+  /* ---------------- STATE ---------------- */
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [sortType, setSortType] = useState("");
   const [priceRange, setPriceRange] = useState("all");
 
-  /* -------------------- FILTER + SORT -------------------- */
+  /* ---------------- LOAD PRODUCTS ---------------- */
+  useEffect(() => {
+    fetchProducts().then(setProducts);
+  }, []);
+
+  /* ---------------- FILTER + SORT ---------------- */
   const filteredProducts = products
-    .filter(product =>
-      product.name.toLowerCase().includes(search.toLowerCase())
-    )
-    .filter(product => {
-      if (priceRange === "low") return product.price < 100;
-      if (priceRange === "mid")
-        return product.price >= 100 && product.price <= 300;
-      if (priceRange === "high") return product.price > 300;
+    .filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+    .filter(p => {
+      if (priceRange === "low") return p.price < 100;
+      if (priceRange === "mid") return p.price >= 100 && p.price <= 300;
+      if (priceRange === "high") return p.price > 300;
       return true;
     })
     .sort((a, b) => {
@@ -29,14 +32,14 @@ function Products({ products, cart, setCart, showToast }) {
       return 0;
     });
 
-  /* -------------------- CART HANDLERS -------------------- */
+  /* ---------------- CART HANDLERS ---------------- */
   const addToCart = product => {
-    const existingItem = cart.find(item => item.id === product.id);
+    const existing = cart.find(item => item._id === product._id);
 
-    if (existingItem) {
+    if (existing) {
       setCart(
         cart.map(item =>
-          item.id === product.id
+          item._id === product._id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
@@ -51,9 +54,7 @@ function Products({ products, cart, setCart, showToast }) {
   const increaseQty = id => {
     setCart(
       cart.map(item =>
-        item.id === id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
+        item._id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
@@ -62,16 +63,14 @@ function Products({ products, cart, setCart, showToast }) {
     setCart(
       cart
         .map(item =>
-          item.id === id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+          item._id === id ? { ...item, quantity: item.quantity - 1 } : item
         )
         .filter(item => item.quantity > 0)
     );
   };
 
   const removeFromCart = id => {
-    setCart(cart.filter(item => item.id !== id));
+    setCart(cart.filter(item => item._id !== id));
     showToast("❌ Removed from cart", "info");
   };
 
@@ -80,23 +79,25 @@ function Products({ products, cart, setCart, showToast }) {
     0
   );
 
-  /* -------------------- UI -------------------- */
+  /* ---------------- UI ---------------- */
   return (
-    <div className="page shop-with-cart">
-      {/* PRODUCTS SECTION */}
-      <div className="shop-products">
-        <h2>Products</h2>
+    <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        {/* FILTER CONTROLS */}
-        <div className="shop-controls">
+      {/* PRODUCTS */}
+      <div className="lg:col-span-2">
+        <h2 className="text-3xl  font-bold mb-4">Products</h2>
+
+        {/* FILTERS */}
+        <div className="flex flex-wrap gap-5 mb-6">
           <input
-            type="text"
+            className=" bg-white border rounded-md px-3 py-2 w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-green-600"
             placeholder="Search product..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
 
           <select
+            className="bg-white border w-full md:w-1/3 rounded-md px-3 py-2 focus:outline-none"
             value={sortType}
             onChange={e => setSortType(e.target.value)}
           >
@@ -107,6 +108,7 @@ function Products({ products, cart, setCart, showToast }) {
           </select>
 
           <select
+            className=" bg-white w-full md:w-1/4  border rounded-md px-3 py-2 focus:outline-none"
             value={priceRange}
             onChange={e => setPriceRange(e.target.value)}
           >
@@ -118,79 +120,85 @@ function Products({ products, cart, setCart, showToast }) {
         </div>
 
         {/* PRODUCT GRID */}
-        <div className="shop-grid-ui">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredProducts.map(product => (
             <ProductCardShop
-              key={product.id}
+              key={product._id}
               product={product}
               onAddToCart={addToCart}
             />
           ))}
         </div>
       </div>
-    
 
-      {/* CART PANEL */}
-      <div className="shop-cart-panel">
-        <h3>🛒 Cart</h3>
+      {/* CART */}
+      <div className="bg-white border rounded-lg shadow-sm p-4 h-fit sticky top-24">
+        <h3 className="text-xl font-semibold mb-4">🛒 Cart</h3>
 
         {cart.length === 0 ? (
-          <p className="empty-cart">Cart is empty</p>
+          <p className="text-gray-500">Cart is empty</p>
         ) : (
           <>
-            {cart.map(item => (
-              <div key={item.id} className="mini-cart-item">
-                <img src={item.image} alt={item.name} />
+            <div className="space-y-4 max-h-[400px] overflow-y-auto">
+              {cart.map(item => (
+                <div key={item._id} className="flex gap-3 border-b pb-3">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-16 h-16 object-cover rounded"
+                  />
 
-                <div className="mini-cart-info">
-                  <h4>{item.name}</h4>
-                  <p>₹{item.price}</p>
+                  <div className="flex-1">
+                    <h4 className="font-medium">{item.name}</h4>
+                    <p className="text-sm text-gray-600">₹{item.price}</p>
 
-                  <div className="mini-cart-qty">
+                    <div className="flex items-center gap-2 mt-2">
+                      <button
+                        onClick={() => decreaseQty(item._id)}
+                        disabled={item.quantity === 1}
+                        className="px-2 py-1 border rounded disabled:opacity-50"
+                      >
+                        −
+                      </button>
+
+                      <span>{item.quantity}</span>
+
+                      <button
+                        onClick={() => increaseQty(item._id)}
+                        className="px-2 py-1 border rounded"
+                      >
+                        +
+                      </button>
+                    </div>
+
                     <button
-                      onClick={() => decreaseQty(item.id)}
-                      disabled={item.quantity === 1}
+                      onClick={() => removeFromCart(item._id)}
+                      className="text-red-500 text-sm mt-2"
                     >
-                      −
-                    </button>
-
-                    <span>{item.quantity}</span>
-
-                    <button onClick={() => increaseQty(item.id)}>
-                      +
+                      Remove
                     </button>
                   </div>
-
-                  <button
-                    className="remove-btn"
-                    onClick={() => removeFromCart(item.id)}
-                  >
-                    Remove
-                  </button>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
 
-            {/* TOTAL */}
-            <div className="mini-cart-footer">
-              <strong>Total: ₹{totalAmount}</strong>
+            <div className="mt-4 border-t pt-4">
+              <p className="font-semibold mb-3">Total: ₹{totalAmount}</p>
 
               <Link to="/cart">
-                <button className="checkout-btn">Go To Cart</button>
+                <button className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition">
+                  Go To Cart
+                </button>
               </Link>
             </div>
           </>
         )}
-      
       </div>
-
     </div>
-      
   );
 }
 
 Products.propTypes = {
-  products: PropTypes.array.isRequired,
   cart: PropTypes.array.isRequired,
   setCart: PropTypes.func.isRequired,
   showToast: PropTypes.func.isRequired

@@ -51,6 +51,9 @@ function Header({ cartCount }) {
       {/* MENU */}
       <div className={`nav-menu ${menuOpen ? "open" : ""}`}>
         <NavLink to="/" className="nav-item" onClick={() => setMenuOpen(false)}>
+          Home
+        </NavLink>
+        <NavLink to="/products" className="nav-item" onClick={() => setMenuOpen(false)}>
           Products
         </NavLink>
 
