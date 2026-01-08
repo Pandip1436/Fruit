@@ -1,38 +1,61 @@
 import PropTypes from "prop-types";
 import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { placeOrder } from "../services/api";
 
 function Checkout({ cart, setCart }) {
   const navigate = useNavigate();
+
+  // 🔐 Get logged-in user safely
   const user = JSON.parse(localStorage.getItem("loggedInUser"));
 
   const [paymentMethod, setPaymentMethod] = useState("");
   const [error, setError] = useState("");
 
+  // 💰 Total amount
   const total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
+  // 🔐 Redirect if cart has items but user not logged in
+  useEffect(() => {
+    if (cart.length > 0 && !user) {
+      navigate("/login");
+    }
+  }, [cart, user, navigate]);
+
+  // 🧾 Checkout handler
   const handleCheckout = async () => {
+    // 🔐 Login check
+    if (!user) {
+      alert("Please login to place your order");
+      navigate("/login");
+      return;
+    }
+
+    // 💳 Payment check
     if (!paymentMethod) {
       setError("Please select a payment method");
       return;
     }
 
     const order = {
-      user: user.email,
+      user: user.email, 
       items: cart,
       total,
       payment: paymentMethod,
       date: new Date().toLocaleDateString()
     };
 
-    await placeOrder(order);
-
-    setCart([]);
-    navigate("/orders");
+    try {
+      await placeOrder(order);
+      setCart([]);
+      navigate("/orders");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to place order");
+    }
   };
 
   return (
@@ -42,18 +65,18 @@ function Checkout({ cart, setCart }) {
       </h2>
 
       {cart.length === 0 ? (
-        /* EMPTY CHECKOUT */
+        /* EMPTY CART */
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-md p-8 text-center">
           <div className="text-5xl mb-4">🛒</div>
           <h3 className="text-xl font-semibold mb-2">
             No items to checkout
           </h3>
           <p className="text-gray-600 mb-6">
-            Your cart is empty. Add some fresh fruits to continue.
+            Your cart is empty. Add some products to continue.
           </p>
           <Link to="/products">
             <button className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition">
-              Go Product Page
+              Go to Products
             </button>
           </Link>
         </div>
@@ -86,9 +109,7 @@ function Checkout({ cart, setCart }) {
                   </div>
 
                   <div className="text-right">
-                    <p className="text-gray-600">
-                      ₹{item.price}
-                    </p>
+                    <p className="text-gray-600">₹{item.price}</p>
                     <p className="font-semibold">
                       ₹{item.price * item.quantity}
                     </p>
@@ -105,51 +126,28 @@ function Checkout({ cart, setCart }) {
             </h3>
 
             {error && (
-              <p className="text-red-500 text-sm">
-                {error}
-              </p>
+              <p className="text-red-500 text-sm">{error}</p>
             )}
 
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="payment"
-                value="Cash on Delivery"
-                onChange={e => {
-                  setPaymentMethod(e.target.value);
-                  setError("");
-                }}
-              />
-              Cash on Delivery
-            </label>
+            {["Cash on Delivery", "Card Payment", "UPI"].map(method => (
+              <label
+                key={method}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  value={method}
+                  onChange={e => {
+                    setPaymentMethod(e.target.value);
+                    setError("");
+                  }}
+                />
+                {method}
+              </label>
+            ))}
 
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="payment"
-                value="Card Payment"
-                onChange={e => {
-                  setPaymentMethod(e.target.value);
-                  setError("");
-                }}
-              />
-              Card Payment
-            </label>
-
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="payment"
-                value="UPI"
-                onChange={e => {
-                  setPaymentMethod(e.target.value);
-                  setError("");
-                }}
-              />
-              UPI
-            </label>
-
-            {/* CARD FORM (MOCK) */}
+            {/* CARD FORM (DEMO) */}
             {paymentMethod === "Card Payment" && (
               <div className="space-y-3 mt-4">
                 <input
@@ -173,7 +171,7 @@ function Checkout({ cart, setCart }) {
                   className="w-full border rounded-md px-3 py-2"
                 />
                 <p className="text-xs text-gray-500">
-                  🔒 This is a demo card form
+                  🔒 Demo card form
                 </p>
               </div>
             )}
@@ -190,22 +188,28 @@ function Checkout({ cart, setCart }) {
                   className="mx-auto w-40 h-40 object-contain"
                 />
                 <p className="text-xs text-gray-500">
-                  UPI ID: myfruitsshop@upi
+                  UPI ID: myshop@upi
                 </p>
               </div>
             )}
           </div>
 
-          {/* TOTAL */}
+          {/* TOTAL & ACTION */}
           <div className="md:col-span-3 bg-white rounded-xl shadow-md p-6 flex flex-col md:flex-row items-center justify-between gap-4">
             <h3 className="text-xl font-bold">
               Total Amount: ₹{total}
             </h3>
+
             <button
               onClick={handleCheckout}
-              className="bg-green-600 text-white px-8 py-3 rounded-md hover:bg-green-700 transition"
+              disabled={!user}
+              className={`px-8 py-3 rounded-md transition text-white ${
+                user
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
             >
-              Place Order
+              {user ? "Place Order" : "Login to Place Order"}
             </button>
           </div>
         </div>
