@@ -7,7 +7,7 @@ import "../pages/css/Header.css";
 function Header({ cartCount }) {
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // ✅ mobile menu
+  const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef();
   const navigate = useNavigate();
 
@@ -47,13 +47,13 @@ function Header({ cartCount }) {
       >
         ☰
       </div>
-      
 
       {/* MENU */}
       <div className={`nav-menu ${menuOpen ? "open" : ""}`}>
         <NavLink to="/" className="nav-item" onClick={() => setMenuOpen(false)}>
           Home
         </NavLink>
+
         <NavLink to="/products" className="nav-item" onClick={() => setMenuOpen(false)}>
           Products
         </NavLink>
