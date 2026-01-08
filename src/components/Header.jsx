@@ -47,6 +47,7 @@ function Header({ cartCount }) {
       >
         ☰
       </div>
+      
 
       {/* MENU */}
       <div className={`nav-menu ${menuOpen ? "open" : ""}`}>

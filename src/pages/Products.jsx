@@ -85,19 +85,19 @@ function Products({ cart, setCart, showToast }) {
 
       {/* PRODUCTS */}
       <div className="lg:col-span-2">
-        <h2 className="text-3xl  font-bold mb-4">Products</h2>
+        <h2 className="text-3xl font-bold mb-4">Products</h2>
 
         {/* FILTERS */}
-        <div className="flex flex-wrap gap-5 mb-6">
+        <div className="flex flex-wrap gap-4 mb-6">
           <input
-            className=" bg-white border rounded-md px-3 py-2 w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-green-600"
+            className="bg-white border rounded-md px-3 py-2 w-full sm:w-1/3 focus:outline-none focus:ring-2 focus:ring-green-600"
             placeholder="Search product..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
 
           <select
-            className="bg-white border w-full md:w-1/3 rounded-md px-3 py-2 focus:outline-none"
+            className="bg-white border w-full sm:w-1/3 rounded-md px-3 py-2 focus:outline-none"
             value={sortType}
             onChange={e => setSortType(e.target.value)}
           >
@@ -108,7 +108,7 @@ function Products({ cart, setCart, showToast }) {
           </select>
 
           <select
-            className=" bg-white w-full md:w-1/4  border rounded-md px-3 py-2 focus:outline-none"
+            className="bg-white border w-full sm:w-1/4 rounded-md px-3 py-2 focus:outline-none"
             value={priceRange}
             onChange={e => setPriceRange(e.target.value)}
           >
@@ -119,8 +119,8 @@ function Products({ cart, setCart, showToast }) {
           </select>
         </div>
 
-        {/* PRODUCT GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {/* PRODUCT GRID (✅ MOBILE: 2 PER ROW) */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
           {filteredProducts.map(product => (
             <ProductCardShop
               key={product._id}
@@ -183,7 +183,9 @@ function Products({ cart, setCart, showToast }) {
             </div>
 
             <div className="mt-4 border-t pt-4">
-              <p className="font-semibold mb-3">Total: ₹{totalAmount}</p>
+              <p className="font-semibold mb-3">
+                Total: ₹{totalAmount}
+              </p>
 
               <Link to="/cart">
                 <button className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition">
