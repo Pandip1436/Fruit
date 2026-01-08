@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:5000/api";
+// const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 
 /* ---------- AUTH ---------- */
 export const registerUser = data =>
@@ -15,34 +17,34 @@ export const loginUser = data =>
     body: JSON.stringify(data)
   }).then(res => res.json());
 
-/* USERS */
+/* ---------- USERS ---------- */
 export const fetchUsers = () =>
-  fetch("http://localhost:5000/api/users").then(res => res.json());
+  fetch(`${BASE_URL}/users`)
+    .then(res => res.json());
 
 export const addUser = data =>
-  fetch("http://localhost:5000/api/users", {
+  fetch(`${BASE_URL}/users`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   }).then(res => res.json());
 
 export const updateUser = (id, data) =>
-  fetch(`http://localhost:5000/api/users/${id}`, {
+  fetch(`${BASE_URL}/users/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   }).then(res => res.json());
 
 export const deleteUser = id =>
-  fetch(`http://localhost:5000/api/users/${id}`, {
+  fetch(`${BASE_URL}/users/${id}`, {
     method: "DELETE"
   }).then(res => res.json());
 
-
-
 /* ---------- PRODUCTS ---------- */
 export const fetchProducts = () =>
-  fetch(`${BASE_URL}/products`).then(res => res.json());
+  fetch(`${BASE_URL}/products`)
+    .then(res => res.json());
 
 export const addProduct = product =>
   fetch(`${BASE_URL}/products`, {
@@ -51,25 +53,22 @@ export const addProduct = product =>
     body: JSON.stringify(product)
   }).then(res => res.json());
 
-export const deleteProduct = id =>
-  fetch(`${BASE_URL}/products/${id}`, {
-    method: "DELETE"
-  }).then(res => res.json());
-  
-  /* PRODUCTS */
 export const updateProduct = (id, data) =>
-  fetch(`http://localhost:5000/api/products/${id}`, {
+  fetch(`${BASE_URL}/products/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   }).then(res => res.json());
 
-export const deleteAllProducts = () =>
-  fetch(`http://localhost:5000/api/products`, {
+export const deleteProduct = id =>
+  fetch(`${BASE_URL}/products/${id}`, {
     method: "DELETE"
   }).then(res => res.json());
 
-  
+export const deleteAllProducts = () =>
+  fetch(`${BASE_URL}/products`, {
+    method: "DELETE"
+  }).then(res => res.json());
 
 /* ---------- ORDERS ---------- */
 export const placeOrder = order =>
@@ -80,7 +79,8 @@ export const placeOrder = order =>
   }).then(res => res.json());
 
 export const fetchOrders = () =>
-  fetch(`${BASE_URL}/orders`).then(res => res.json());
+  fetch(`${BASE_URL}/orders`)
+    .then(res => res.json());
 
 export const updateOrderStatus = (id, status) =>
   fetch(`${BASE_URL}/orders/${id}`, {
@@ -89,15 +89,12 @@ export const updateOrderStatus = (id, status) =>
     body: JSON.stringify({ status })
   }).then(res => res.json());
 
-  
-/* ADMIN DASHBOARD */
+/* ---------- ADMIN ---------- */
 export const fetchAdminStats = () =>
-  fetch("http://localhost:5000/api/admin/stats")
+  fetch(`${BASE_URL}/admin/stats`)
     .then(res => res.json());
 
-/* FEATURED PRODUCTS */
+/* ---------- FEATURED PRODUCTS ---------- */
 export const fetchFeaturedProducts = () =>
-  fetch("http://localhost:5000/api/products/featured")
+  fetch(`${BASE_URL}/products/featured`)
     .then(res => res.json());
-
-    
