@@ -2,10 +2,12 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
 function Cart({ cart, setCart, showToast }) {
+
+  /* ---------------- QTY HANDLERS ---------------- */
   const increaseQty = id => {
     setCart(
       cart.map(item =>
-        item.id === id
+        item._id === id
           ? { ...item, quantity: item.quantity + 1 }
           : item
       )
@@ -16,7 +18,7 @@ function Cart({ cart, setCart, showToast }) {
     setCart(
       cart
         .map(item =>
-          item.id === id
+          item._id === id
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
@@ -25,10 +27,11 @@ function Cart({ cart, setCart, showToast }) {
   };
 
   const removeFromCart = id => {
-    setCart(cart.filter(item => item.id !== id));
+    setCart(cart.filter(item => item._id !== id));
     showToast("❌ Item removed from cart", "info");
   };
 
+  /* ---------------- TOTAL ---------------- */
   const total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -44,7 +47,7 @@ function Cart({ cart, setCart, showToast }) {
         /* EMPTY CART */
         <div className="w-full mx-auto bg-white rounded-xl shadow-md p-8 text-center">
           <div className="text-5xl mb-6">🛒</div>
-          <h3 className="text-xl font-semibold mb-8">
+          <h3 className="text-xl font-semibold mb-4">
             Your cart is empty
           </h3>
           <p className="text-gray-600 mb-8">
@@ -52,7 +55,7 @@ function Cart({ cart, setCart, showToast }) {
           </p>
 
           <Link to="/products">
-            <button className="w-full sm:w-auto bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition">
+            <button className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition">
               Go Product Page
             </button>
           </Link>
@@ -83,7 +86,7 @@ function Cart({ cart, setCart, showToast }) {
                   {/* QTY */}
                   <div className="flex items-center gap-4 mt-3">
                     <button
-                      onClick={() => decreaseQty(item.id)}
+                      onClick={() => decreaseQty(item._id)}
                       disabled={item.quantity === 1}
                       className="px-4 py-2 border rounded-md disabled:opacity-50"
                     >
@@ -95,7 +98,7 @@ function Cart({ cart, setCart, showToast }) {
                     </span>
 
                     <button
-                      onClick={() => increaseQty(item.id)}
+                      onClick={() => increaseQty(item._id)}
                       className="px-4 py-2 border rounded-md"
                     >
                       +
@@ -103,7 +106,7 @@ function Cart({ cart, setCart, showToast }) {
                   </div>
 
                   <button
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item._id)}
                     className="text-red-500 text-sm mt-3 hover:underline"
                   >
                     Remove
