@@ -1,5 +1,14 @@
 
  @import "tailwindcss";
+.nav-link {
+  @apply text-gray-700 font-medium hover:text-green-600;
+}
+
+.mobile-link {
+  @apply block text-gray-700 font-medium border-b pb-2;
+}
+
+ 
 /* ===== GLOBAL STYLING ===== */
 body {
   margin: 0;
@@ -24,65 +33,6 @@ button {
   
 }
 
-/* ===== NAV BAR ===== */
-nav {
-  background: #1e293b;
-  padding: 15px 25px;
-  display: flex;
-  gap: 20px;
-  
-  
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  font-size: 16px;
-}
-.shop-controls {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.shop-controls input,
-.shop-controls select {
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
-  font-size: 14px;
-}
-
-.shop-controls input {
-  flex: 1;
-  min-width: 200px;
-}
-
-
-nav a:hover {
-  text-decoration: none;
-  /* color: rgb(255, 0, 0); */
-}
-/* PROJECT TITLE INSIDE NAV */
-.header-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  
-}
-
-.project-title {
-  color: white;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.nav-links a {
-  margin-left: 20px;
-  color: white;
-  text-decoration: none;
-}
 
 
 /* ===== PAGE CONTAINER ===== */

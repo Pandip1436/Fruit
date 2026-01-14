@@ -24,6 +24,7 @@ import UserOrders from "./pages/UserOrders";
 import UserOrderDetails from "./pages/UserOrderDetails";
 import Landing from "./pages/Landing";
 import { fetchProducts } from "../src/services/api";
+import Feedback from "./pages/Feedback";
 
 
 function App() {
@@ -133,6 +134,8 @@ useEffect(() => {
             <Route path="/about" element={<About />} />
 
             <Route path="/contact" element={<Contact />} />
+
+            <Route path="/feedback" element={<Feedback />} />
 
             <Route path="/login" element={<Login />} />
 

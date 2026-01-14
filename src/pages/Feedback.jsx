@@ -1,0 +1,212 @@
+import { useState } from "react";
+import {
+  StarIcon,
+  UserIcon,
+  PhoneIcon,
+  MapPinIcon
+} from "@heroicons/react/24/solid";
+
+function Feedback() {
+  const [rating, setRating] = useState(0);
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    location: "",
+    message: ""
+  });
+
+  const reviews = [
+    {
+      name: "Ramesh",
+      location: "Sivakasi",
+      rating: 5,
+      comment: "Very fresh fruits and excellent service!"
+    },
+    {
+      name: "Kavitha",
+      location: "Srivilliputhur",
+      rating: 4,
+      comment: "Good quality fruits and fast delivery."
+    }
+  ];
+
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    alert("Thank you for your feedback!");
+    setForm({ name: "", phone: "", location: "", message: "" });
+    setRating(0);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-yellow-50 via-white to-yellow-100">
+
+      {/* ================= HEADER ================= */}
+      <section className="py-16 text-center px-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+          Customer Feedback
+        </h1>
+        <p className="mt-3 text-gray-600">
+          Your experience matters to us. Share your thoughts and help us serve you better.
+        </p>
+      </section>
+
+      {/* ================= MAIN CONTENT ================= */}
+      <section className="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 gap-10">
+
+        {/* ================= LEFT – FORM ================= */}
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <h2 className="text-xl font-semibold mb-6">Leave Your Feedback</h2>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* NAME */}
+            <div>
+              <label className="text-sm font-medium">Full Name *</label>
+              <div className="flex items-center border rounded-lg px-3 mt-1">
+                <UserIcon className="h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={form.name}
+                  onChange={handleChange}
+                  placeholder="Enter your name"
+                  className="w-full px-3 py-2 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* PHONE */}
+            <div>
+              <label className="text-sm font-medium">Phone Number</label>
+              <div className="flex items-center border rounded-lg px-3 mt-1">
+                <PhoneIcon className="h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  placeholder="Enter phone number"
+                  className="w-full px-3 py-2 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* LOCATION */}
+            <div>
+              <label className="text-sm font-medium">Location *</label>
+              <div className="flex items-center border rounded-lg px-3 mt-1">
+                <MapPinIcon className="h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="location"
+                  required
+                  value={form.location}
+                  onChange={handleChange}
+                  placeholder="Your city / area"
+                  className="w-full px-3 py-2 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* RATING */}
+            <div>
+              <label className="text-sm font-medium">Rate Your Experience *</label>
+              <div className="flex gap-1 mt-2">
+                {[1, 2, 3, 4, 5].map(star => (
+                  <StarIcon
+                    key={star}
+                    onClick={() => setRating(star)}
+                    className={`h-7 w-7 cursor-pointer ${
+                      star <= rating ? "text-yellow-400" : "text-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* MESSAGE */}
+            <div>
+              <label className="text-sm font-medium">Your Feedback *</label>
+              <textarea
+                name="message"
+                rows="4"
+                required
+                value={form.message}
+                onChange={handleChange}
+                placeholder="Share your experience..."
+                className="w-full border rounded-lg px-3 py-2 mt-1 resize-none outline-none"
+              />
+            </div>
+
+            {/* SUBMIT */}
+            <button
+              type="submit"
+              className="w-full bg-yellow-500 text-white py-3 rounded-lg font-semibold hover:bg-yellow-600 transition"
+            >
+              ★ Submit Feedback
+            </button>
+
+          </form>
+        </div>
+
+        {/* ================= RIGHT – REVIEWS ================= */}
+        <div className="space-y-6">
+
+          {/* RATING SUMMARY */}
+          <div className="bg-yellow-50 border rounded-xl p-6 text-center">
+            <div className="flex justify-center gap-1 mb-2">
+              {[1, 2, 3, 4, 5].map(i => (
+                <StarIcon key={i} className="h-5 w-5 text-yellow-400" />
+              ))}
+            </div>
+            <h3 className="text-lg font-bold">4.8</h3>
+            <p className="text-sm text-gray-600">
+              Based on {reviews.length} customer reviews
+            </p>
+          </div>
+
+          {/* REVIEW CARDS */}
+          {reviews.map((review, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-xl shadow-md p-5 border-l-4 border-yellow-400"
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <h4 className="font-semibold uppercase">
+                    {review.name}
+                  </h4>
+                  <p className="text-xs text-gray-500">
+                    {review.location}
+                  </p>
+                </div>
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <StarIcon
+                      key={i}
+                      className={`h-4 w-4 ${
+                        i <= review.rating ? "text-yellow-400" : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <p className="mt-3 text-gray-600 text-sm italic">
+                “{review.comment}”
+              </p>
+            </div>
+          ))}
+        </div>
+
+      </section>
+    </div>
+  );
+}
+
+export default Feedback;
