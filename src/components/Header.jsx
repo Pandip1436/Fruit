@@ -147,6 +147,7 @@ function Header({ cartCount }) {
             <NavLink to="/products" onClick={() => setMenuOpen(false)}>Products</NavLink>
             <NavLink to="/about" onClick={() => setMenuOpen(false)}>About</NavLink>
             <NavLink to="/contact" onClick={() => setMenuOpen(false)}>Contact</NavLink>
+            <NavLink to="/feedback" onClick={() => setMenuOpen(false)}>Feedback</NavLink>
 
             {user?.role === "admin" && (
               <button
