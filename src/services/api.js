@@ -98,3 +98,24 @@ export const fetchAdminStats = () =>
 export const fetchFeaturedProducts = () =>
   fetch(`${BASE_URL}/products/featured`)
     .then(res => res.json());
+
+    // const BASE_URL = "http://localhost:5000/api/feedback";
+
+export const submitFeedback = data =>
+  fetch(`${BASE_URL}/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  }).then(res => res.json());
+
+export const fetchFeedbacks = () =>
+  fetch(`${BASE_URL}/feedback`).then(res => res.json());
+
+export const fetchAdminFeedbacks = () =>
+  fetch(`${BASE_URL}/feedback/admin`).then(res => res.json());
+
+export const approveFeedback = id =>
+  fetch(`${BASE_URL}/feedback/${id}/approve`, { method: "PUT" });
+
+export const deleteFeedback = id =>
+  fetch(`${BASE_URL}/feedback/${id}`, { method: "DELETE" });

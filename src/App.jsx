@@ -25,6 +25,7 @@ import UserOrderDetails from "./pages/UserOrderDetails";
 import Landing from "./pages/Landing";
 import { fetchProducts } from "../src/services/api";
 import Feedback from "./pages/Feedback";
+import AdminFeedback from "./pages/AdminFeedback";
 
 
 function App() {
@@ -92,6 +93,7 @@ useEffect(() => {
             }
          />
          <Route path="users" element={<AdminUsers/>} />
+         <Route path="feedback" element={<AdminFeedback/>} />
          <Route path="orders" element={<AdminOrders/>} />
          <Route path="orders/:orderId" element={<AdminOrderDetails/>} />
             
@@ -136,6 +138,7 @@ useEffect(() => {
             <Route path="/contact" element={<Contact />} />
 
             <Route path="/feedback" element={<Feedback />} />
+            
 
             <Route path="/login" element={<Login />} />
 

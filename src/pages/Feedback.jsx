@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StarIcon,
   UserIcon,
   PhoneIcon,
   MapPinIcon
 } from "@heroicons/react/24/solid";
+import { submitFeedback, fetchFeedbacks } from "../services/api";
 
 function Feedback() {
   const [rating, setRating] = useState(0);
+  const [reviews, setReviews] = useState([]);
+  const [toast, setToast] = useState("");
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -15,30 +19,31 @@ function Feedback() {
     message: ""
   });
 
-  const reviews = [
-    {
-      name: "Ramesh",
-      location: "Sivakasi",
-      rating: 5,
-      comment: "Very fresh fruits and excellent service!"
-    },
-    {
-      name: "Kavitha",
-      location: "Srivilliputhur",
-      rating: 4,
-      comment: "Good quality fruits and fast delivery."
-    }
-  ];
+  /* ---------------- FETCH REVIEWS ---------------- */
+  useEffect(() => {
+    fetchFeedbacks().then(setReviews);
+  }, []);
 
+  /* ---------------- AVG RATING ---------------- */
+  const avgRating =
+    reviews.reduce((sum, r) => sum + r.rating, 0) /
+    (reviews.length || 1);
+
+  /* ---------------- FORM HANDLERS ---------------- */
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    alert("Thank you for your feedback!");
+
+    await submitFeedback({ ...form, rating });
+
+    setToast("✅ Feedback submitted successfully!");
     setForm({ name: "", phone: "", location: "", message: "" });
     setRating(0);
+
+    setTimeout(() => setToast(""), 3000);
   };
 
   return (
@@ -54,10 +59,12 @@ function Feedback() {
         </p>
       </section>
 
-      {/* ================= MAIN CONTENT ================= */}
+    
+
+      {/* ================= MAIN ================= */}
       <section className="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-2 gap-10">
 
-        {/* ================= LEFT – FORM ================= */}
+        {/* ================= FORM ================= */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-xl font-semibold mb-6">Leave Your Feedback</h2>
 
@@ -73,8 +80,8 @@ function Feedback() {
                   name="name"
                   required
                   value={form.name}
-                  onChange={handleChange}
                   placeholder="Enter your name"
+                  onChange={handleChange}
                   className="w-full px-3 py-2 outline-none"
                 />
               </div>
@@ -89,8 +96,8 @@ function Feedback() {
                   type="text"
                   name="phone"
                   value={form.phone}
-                  onChange={handleChange}
                   placeholder="Enter phone number"
+                  onChange={handleChange}
                   className="w-full px-3 py-2 outline-none"
                 />
               </div>
@@ -106,8 +113,8 @@ function Feedback() {
                   name="location"
                   required
                   value={form.location}
-                  onChange={handleChange}
                   placeholder="Your city / area"
+                  onChange={handleChange}
                   className="w-full px-3 py-2 outline-none"
                 />
               </div>
@@ -137,46 +144,52 @@ function Feedback() {
                 rows="4"
                 required
                 value={form.message}
-                onChange={handleChange}
                 placeholder="Share your experience..."
+                onChange={handleChange}
                 className="w-full border rounded-lg px-3 py-2 mt-1 resize-none outline-none"
               />
             </div>
 
-            {/* SUBMIT */}
             <button
               type="submit"
               className="w-full bg-yellow-500 text-white py-3 rounded-lg font-semibold hover:bg-yellow-600 transition"
             >
               ★ Submit Feedback
             </button>
-
+              {/* ================= TOAST ================= */}
+      {toast && (
+        <div className="max-w-md mx-auto mb-6 text-center bg-green-100 text-green-700 py-2 rounded-lg">
+          {toast}
+        </div>
+      )}
           </form>
         </div>
 
-        {/* ================= RIGHT – REVIEWS ================= */}
+        {/* ================= REVIEWS ================= */}
         <div className="space-y-6">
 
-          {/* RATING SUMMARY */}
+          {/* SUMMARY */}
           <div className="bg-yellow-50 border rounded-xl p-6 text-center">
             <div className="flex justify-center gap-1 mb-2">
               {[1, 2, 3, 4, 5].map(i => (
                 <StarIcon key={i} className="h-5 w-5 text-yellow-400" />
               ))}
             </div>
-            <h3 className="text-lg font-bold">4.8</h3>
+            <h3 className="text-lg font-bold">
+              {avgRating.toFixed(1)}
+            </h3>
             <p className="text-sm text-gray-600">
               Based on {reviews.length} customer reviews
             </p>
           </div>
 
-          {/* REVIEW CARDS */}
-          {reviews.map((review, index) => (
+          {/* CARDS */}
+          {reviews.map(review => (
             <div
-              key={index}
+              key={review._id}
               className="bg-white rounded-xl shadow-md p-5 border-l-4 border-yellow-400"
             >
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between">
                 <div>
                   <h4 className="font-semibold uppercase">
                     {review.name}
@@ -198,7 +211,7 @@ function Feedback() {
               </div>
 
               <p className="mt-3 text-gray-600 text-sm italic">
-                “{review.comment}”
+                “{review.message}”
               </p>
             </div>
           ))}
