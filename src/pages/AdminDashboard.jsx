@@ -82,9 +82,10 @@ function AdminDashboard() {
         </header>
 
         {/* CONTENT */}
-        <main className="p-6 flex-1 overflow-y-auto">
-          <Outlet />
+        <main className="flex-1 overflow-y-auto">
+         <Outlet />
         </main>
+
 
       </div>
     </div>
