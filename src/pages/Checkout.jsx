@@ -3,45 +3,37 @@ import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { placeOrder } from "../services/api";
 
+import {
+  UserIcon,
+  EnvelopeIcon,
+  PhoneIcon,
+  MapPinIcon,
+  BuildingOfficeIcon,
+  CreditCardIcon,
+  ShoppingBagIcon,
+  ShieldCheckIcon
+} from "@heroicons/react/24/outline";
+
 function Checkout({ cart, setCart }) {
   const navigate = useNavigate();
-
-  // 🔐 Get logged-in user safely
   const user = JSON.parse(localStorage.getItem("loggedInUser"));
 
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [error, setError] = useState("");
+  const [paymentMethod] = useState("Razorpay");
 
-  // 💰 Total amount
   const total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
-  // 🔐 Redirect if cart has items but user not logged in
   useEffect(() => {
-    if (cart.length > 0 && !user) {
-      navigate("/login");
-    }
+    if (cart.length > 0 && !user) navigate("/login");
   }, [cart, user, navigate]);
 
-  // 🧾 Checkout handler
   const handleCheckout = async () => {
-    // 🔐 Login check
-    if (!user) {
-      alert("Please login to place your order");
-      navigate("/login");
-      return;
-    }
-
-    // 💳 Payment check
-    if (!paymentMethod) {
-      setError("Please select a payment method");
-      return;
-    }
+    if (!user) return navigate("/login");
 
     const order = {
-      user: user.email, 
+      user: user.email,
       items: cart,
       total,
       payment: paymentMethod,
@@ -52,11 +44,25 @@ function Checkout({ cart, setCart }) {
       await placeOrder(order);
       setCart([]);
       navigate("/orders");
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert("Failed to place order");
     }
   };
+
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white p-8 rounded-xl shadow text-center">
+          <h3 className="text-lg font-semibold mb-2">Your cart is empty</h3>
+          <Link to="/products">
+            <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg">
+              Go to Products
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8">
@@ -64,156 +70,153 @@ function Checkout({ cart, setCart }) {
         Checkout
       </h2>
 
-      {cart.length === 0 ? (
-        /* EMPTY CART */
-        <div className="max-w-md mx-auto bg-white rounded-xl shadow-md p-8 text-center">
-          <div className="text-5xl mb-4">🛒</div>
-          <h3 className="text-xl font-semibold mb-2">
-            No items to checkout
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Your cart is empty. Add some products to continue.
-          </p>
-          <Link to="/products">
-            <button className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition">
-              Go to Products
-            </button>
-          </Link>
-        </div>
-      ) : (
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* PRODUCT SUMMARY */}
-          <div className="md:col-span-2 bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-xl font-semibold mb-4">
-              Product Summary
+        {/* ================= LEFT ================= */}
+        <div className="lg:col-span-2 space-y-6">
+
+          {/* PERSONAL INFORMATION */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <UserIcon className="h-5 w-5 text-gray-600" />
+              Personal Information
             </h3>
 
-            <div className="space-y-4">
-              {cart.map(item => (
-                <div
-                  key={item._id}
-                  className="flex items-center gap-4 border-b pb-3"
-                >
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-20 h-20 object-cover rounded"
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Full Name *</label>
+                <div className="flex items-center gap-2 border rounded-md px-3 py-2 mt-1">
+                  <UserIcon className="h-5 w-5 text-gray-400" />
+                  <input
+                    className="w-full outline-none"
+                    placeholder="Enter your full name"
                   />
-
-                  <div className="flex-1">
-                    <h4 className="font-medium">{item.name}</h4>
-                    <p className="text-sm text-gray-600">
-                      Qty: {item.quantity}
-                    </p>
-                  </div>
-
-                  <div className="text-right">
-                    <p className="text-gray-600">₹{item.price}</p>
-                    <p className="font-semibold">
-                      ₹{item.price * item.quantity}
-                    </p>
-                  </div>
                 </div>
-              ))}
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Email</label>
+                <div className="flex items-center gap-2 border rounded-md px-3 py-2 mt-1">
+                  <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+                  <input
+                    className="w-full outline-none"
+                    placeholder="Enter your email"
+                  />
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="text-sm font-medium">Phone Number *</label>
+                <div className="flex items-center gap-2 border rounded-md px-3 py-2 mt-1">
+                  <PhoneIcon className="h-5 w-5 text-gray-400" />
+                  <input
+                    className="w-full outline-none"
+                    placeholder="Enter 10-digit mobile number"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* PAYMENT SECTION */}
-          <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
-            <h3 className="text-xl font-semibold">
+          {/* SHIPPING ADDRESS */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <MapPinIcon className="h-5 w-5 text-gray-600" />
+              Shipping Address
+            </h3>
+
+            <textarea
+              rows="3"
+              className="w-full border rounded-md px-3 py-2 resize-none"
+              placeholder="Enter your complete address"
+            />
+
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              <div>
+                <label className="text-sm font-medium">City *</label>
+                <div className="flex items-center gap-2 border rounded-md px-3 py-2 mt-1">
+                  <BuildingOfficeIcon className="h-5 w-5 text-gray-400" />
+                  <input className="w-full outline-none" placeholder="City" />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">State *</label>
+                <div className="flex items-center gap-2 border rounded-md px-3 py-2 mt-1">
+                  <BuildingOfficeIcon className="h-5 w-5 text-gray-400" />
+                  <input className="w-full outline-none" placeholder="State" />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">PIN Code *</label>
+                <div className="flex items-center gap-2 border rounded-md px-3 py-2 mt-1">
+                  <BuildingOfficeIcon className="h-5 w-5 text-gray-400" />
+                  <input className="w-full outline-none" placeholder="PIN Code" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* PAYMENT METHOD */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <CreditCardIcon className="h-5 w-5 text-gray-600" />
               Payment Method
             </h3>
 
-            {error && (
-              <p className="text-red-500 text-sm">{error}</p>
-            )}
+            <div className="flex items-center gap-3 border rounded-md p-4 bg-gray-50">
+              <CreditCardIcon className="h-5 w-5 text-gray-600" />
+              <span className="font-medium">Secure Payment via Razorpay</span>
+              <ShieldCheckIcon className="h-5 w-5 text-green-600 ml-auto" />
+            </div>
 
-            {["Cash on Delivery", "Card Payment", "UPI"].map(method => (
-              <label
-                key={method}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  value={method}
-                  onChange={e => {
-                    setPaymentMethod(e.target.value);
-                    setError("");
-                  }}
-                />
-                {method}
-              </label>
-            ))}
-
-            {/* CARD FORM (DEMO) */}
-            {paymentMethod === "Card Payment" && (
-              <div className="space-y-3 mt-4">
-                <input
-                  placeholder="Card Number"
-                  maxLength="16"
-                  className="w-full border rounded-md px-3 py-2"
-                />
-                <div className="flex gap-3">
-                  <input
-                    placeholder="MM/YY"
-                    className="w-1/2 border rounded-md px-3 py-2"
-                  />
-                  <input
-                    placeholder="CVV"
-                    maxLength="3"
-                    className="w-1/2 border rounded-md px-3 py-2"
-                  />
-                </div>
-                <input
-                  placeholder="Card Holder Name"
-                  className="w-full border rounded-md px-3 py-2"
-                />
-                <p className="text-xs text-gray-500">
-                  🔒 Demo card form
-                </p>
-              </div>
-            )}
-
-            {/* UPI PREVIEW */}
-            {paymentMethod === "UPI" && (
-              <div className="mt-4 text-center space-y-2">
-                <p className="text-sm">
-                  Scan QR using any UPI app
-                </p>
-                <img
-                  src="/src/assets/qr.jpeg"
-                  alt="UPI QR"
-                  className="mx-auto w-40 h-40 object-contain"
-                />
-                <p className="text-xs text-gray-500">
-                  UPI ID: myshop@upi
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* TOTAL & ACTION */}
-          <div className="md:col-span-3 bg-white rounded-xl shadow-md p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <h3 className="text-xl font-bold">
-              Total Amount: ₹{total}
-            </h3>
-
-            <button
-              onClick={handleCheckout}
-              disabled={!user}
-              className={`px-8 py-3 rounded-md transition text-white ${
-                user
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-gray-400 cursor-not-allowed"
-              }`}
-            >
-              {user ? "Place Order" : "Login to Place Order"}
-            </button>
+            <p className="text-xs text-gray-500 mt-2">
+              Pay securely using UPI, Cards, Net Banking & Wallets
+            </p>
           </div>
         </div>
-      )}
+
+        {/* ================= RIGHT ================= */}
+        <div className="bg-white rounded-lg shadow-sm p-6 h-fit sticky top-6">
+          <h3 className="font-bold mb-4 flex items-center gap-2">
+            {/* <ShoppingBagIcon className="h-5 w-5 text-gray-600" /> */}
+            Order Summary
+          </h3>
+
+          {cart.map(item => (
+            <div key={item._id} className="flex gap-3 mb-4">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-12 h-12 rounded object-cover border"
+              />
+              <div className="flex-1">
+                <p className="text-sm font-medium">{item.name}</p>
+                <p className="text-xs text-gray-500">
+                  Quantity: {item.quantity}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          <div className="border-t pt-4 flex justify-between font-semibold">
+            <span>Final Total</span>
+            <span>₹{total}</span>
+          </div>
+
+          <button
+            onClick={handleCheckout}
+            className="mt-6 w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-md font-semibold transition"
+          >
+            Place Order & Pay ₹{total}
+          </button>
+
+          <p className="text-xs text-gray-500 text-center mt-3">
+            By placing your order, you agree to our Terms & Conditions and Privacy Policy
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
