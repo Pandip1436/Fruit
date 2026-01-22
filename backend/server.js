@@ -1,34 +1,10 @@
 import dotenv from "dotenv";
-dotenv.config();
-import express from "express";
-import cors from "cors";
 
+dotenv.config({
+  path: "D:/learning/Product2/Fruits/backend/.env"
+});
 
-import connectDB from "./config/db.js";
+console.log("BOOT ENV:", process.env.RAZORPAY_KEY_ID);
 
-import authRoutes from "./routes/authRoutes.js";
-import productRoutes from "./routes/productRoutes.js";
-import orderRoutes from "./routes/orderRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import feedbackRoutes from "./routes/feedbackRoutes.js";
-
-
-import paymentRoutes from "./routes/paymentRoutes.js";
-
-connectDB();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.use("/api/users", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/payment", paymentRoutes);
-app.use("/api/feedback", feedbackRoutes);
-app.use("/api/admin", adminRoutes);
-
-
-app.listen(process.env.PORT, () =>
-  console.log(`🚀 Server running on port ${process.env.PORT}`)
-);
+// ⬇️ IMPORTANT: dynamic import AFTER env is loaded
+await import("./app.js");

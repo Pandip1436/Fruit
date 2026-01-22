@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "cross-env RAZORPAY_KEY_ID=rzp_test_S6VbomevcFPjqN RAZORPAY_KEY_SECRET=0RIqWgszCUqaWrc8aPVk4xdQ nodemon server.js",
+    "dev": " nodemon server.js",
     "build": "echo 'no build setup required'"
   },
   "dependencies": {
