@@ -2,16 +2,18 @@
   "name": "fruitshop-backend",
   "version": "1.0.0",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
+    "dev": "cross-env RAZORPAY_KEY_ID=rzp_test_S6VbomevcFPjqN RAZORPAY_KEY_SECRET=0RIqWgszCUqaWrc8aPVk4xdQ nodemon server.js",
     "build": "echo 'no build setup required'"
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "cross-env": "^10.1.0",
     "crypto": "^1.0.1",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
     "mongoose": "^7.0.0",
     "razorpay": "^2.9.6"
   }

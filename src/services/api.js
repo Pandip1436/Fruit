@@ -91,6 +91,26 @@ export const updateOrderStatus = (id, status) =>
 
   
 
+export const createRazorpayOrder = async amount => {
+  const res = await fetch(`${BASE_URL}/payment/create-order`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount })
+  });
+  return res.json();
+};
+
+export const verifyRazorpayPayment = async data => {
+  const res = await fetch(`${BASE_URL}/payment/verify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+};
+
+
+
 /* ---------- ADMIN ---------- */
 export const fetchAdminStats = () =>
   fetch(`${BASE_URL}/admin/stats`)

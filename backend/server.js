@@ -1,6 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+
+
 import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
@@ -10,7 +13,8 @@ import adminRoutes from "./routes/adminRoutes.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
 
 
-dotenv.config();
+import paymentRoutes from "./routes/paymentRoutes.js";
+
 connectDB();
 
 const app = express();
@@ -20,6 +24,7 @@ app.use(express.json());
 app.use("/api/users", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/payment", paymentRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/admin", adminRoutes);
 

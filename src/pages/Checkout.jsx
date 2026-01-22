@@ -2,6 +2,10 @@ import PropTypes from "prop-types";
 import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { placeOrder } from "../services/api";
+import {
+  createRazorpayOrder,
+  verifyRazorpayPayment
+} from "../services/api";
 
 import {
   UserIcon,
@@ -19,6 +23,8 @@ function Checkout({ cart, setCart }) {
   /* ---------------- STATE ---------------- */
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [paymentMethod, setPaymentMethod] = useState("Razorpay");
+
 
   const [form, setForm] = useState({
     name: "",
@@ -30,7 +36,7 @@ function Checkout({ cart, setCart }) {
     pin: ""
   });
 
-  const paymentMethod = "Razorpay";
+  // const paymentMethod = "Razorpay";
 
   /* ---------------- TOTAL ---------------- */
   const total = cart.reduce(
@@ -67,26 +73,82 @@ function Checkout({ cart, setCart }) {
     return Object.keys(newErrors).length === 0;
   };
 
+
   const handleCheckout = async () => {
     if (!validateForm()) return;
-
     setLoading(true);
+  console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
 
-    const order = {
-      user: user.email,
-      items: cart,
-      shippingAddress: form,
-      paymentMethod,
-      total,
-      createdAt: new Date()
-    };
 
     try {
-      await placeOrder(order);
+       // ================= COD (NO Razorpay) =================
+    if (paymentMethod === "COD") {
+      await placeOrder({
+        user: user.email,
+        items: cart,
+        shippingAddress: form,
+        payment: "Cash on Delivery",
+        paymentStatus: "Pending",
+        date: new Date().toLocaleDateString(),
+        total
+      });
+
       setCart([]);
       navigate("/orders");
-    } catch {
-      alert("Failed to place order");
+      return;
+    }
+      // 1️⃣ Create Razorpay order
+      const razorOrder = await createRazorpayOrder(total);
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: razorOrder.amount,
+        currency: "INR",
+        name: "Fruit Shop 🍎",
+        description: "Fresh Fruits Order",
+        order_id: razorOrder.id,
+
+        handler: async response => {
+          // 2️⃣ Verify payment
+          const verify = await verifyRazorpayPayment({
+            ...response,
+            orderData: {
+              user: user.email,
+              items: cart,
+              shippingAddress: form,
+              total
+            }
+          });
+
+          if (verify.success) {
+            await placeOrder({
+              user: user.email,
+              items: cart,
+              shippingAddress: form,
+               payment: paymentMethod, 
+               date: new Date().toLocaleDateString(),
+              paymentId: response.razorpay_payment_id,
+              total
+            });
+            setCart([]);
+            navigate("/orders");
+          } else {
+            alert("Payment verification failed");
+          }
+        },
+
+        prefill: {
+          name: form.name,
+          email: user.email,
+          contact: form.phone
+        },
+
+        theme: { color: "#F59E0B" }
+      };
+
+      new window.Razorpay(options).open();
+    } catch (err) {
+      alert(err.message);
     } finally {
       setLoading(false);
     }
@@ -222,7 +284,7 @@ function Checkout({ cart, setCart }) {
 
               <div>
                 <input
-                  type="text"
+                  type="number"
                   name="pin"
                   required
                   value={form.pin}
@@ -238,20 +300,43 @@ function Checkout({ cart, setCart }) {
           </div>
 
           {/* PAYMENT */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="font-bold mb-3 flex items-center gap-2">
-              <CreditCardIcon className="h-5 w-5 text-gray-600" />
-              Payment Method
-            </h3>
+<div className="bg-white rounded-xl shadow-sm p-6">
+  <h3 className="font-bold mb-3 flex items-center gap-2">
+    <CreditCardIcon className="h-5 w-5 text-gray-600" />
+    Payment Method
+  </h3>
 
-            <div className="flex items-center gap-3 bg-gray-50 border rounded-lg p-4">
-              <CreditCardIcon className="h-5 w-5 text-gray-600" />
-              <span className="font-medium">
-                Razorpay – UPI / Cards / NetBanking
-              </span>
-              <ShieldCheckIcon className="h-5 w-5 text-green-600 ml-auto" />
-            </div>
-          </div>
+  <div className="space-y-3">
+
+    {/* Razorpay */}
+    <label className="flex items-center gap-3 bg-gray-50 border rounded-lg p-4 cursor-pointer">
+      <input
+        type="radio"
+        name="payment"
+        checked={paymentMethod === "Razorpay"}
+        onChange={() => setPaymentMethod("Razorpay")}
+      />
+      <CreditCardIcon className="h-5 w-5 text-gray-600" />
+      <span className="font-medium">
+        Razorpay – UPI / Cards / NetBanking
+      </span>
+      <ShieldCheckIcon className="h-5 w-5 text-green-600 ml-auto" />
+    </label>
+
+    {/* COD */}
+    <label className="flex items-center gap-3 border rounded-lg p-4 cursor-pointer">
+      <input
+        type="radio"
+        name="payment"
+        checked={paymentMethod === "COD"}
+        onChange={() => setPaymentMethod("COD")}
+      />
+      <span className="font-medium">Cash on Delivery</span>
+    </label>
+
+  </div>
+</div>
+
         </div>
 
         {/* ================= RIGHT ================= */}
@@ -287,7 +372,13 @@ function Checkout({ cart, setCart }) {
             disabled={loading}
             className="mt-6 w-full bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 text-white py-3 rounded-lg font-semibold"
           >
-            {loading ? "Placing Order..." : `Place Order & Pay ₹${total}`}
+            {loading
+                ? "Placing Order..."
+                : paymentMethod === "COD"
+                ? "Place Order (Cash on Delivery)"
+                : `Place Order & Pay ₹${total}`
+            }
+
           </button>
 
           <p className="text-xs text-gray-500 text-center mt-3">
