@@ -77,7 +77,7 @@ function Checkout({ cart, setCart }) {
   const handleCheckout = async () => {
     if (!validateForm()) return;
     setLoading(true);
-  console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
+  // console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
 
 
     try {
