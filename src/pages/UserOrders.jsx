@@ -4,18 +4,23 @@ import { Link } from "react-router-dom";
 import { fetchOrders } from "../services/api";
 
 function UserOrders() {
-  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+  // ✅ FIX: Memoize user so it doesn't change every render
+  const user = useMemo(() => {
+    return JSON.parse(localStorage.getItem("loggedInUser"));
+  }, []);
+
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.email) return;
+
     fetchOrders().then(data => {
       setOrders(data.filter(o => o.user === user.email));
     });
-  }, [user]);
+  }, [user?.email]); // ✅ depend on primitive value only
 
   const toggleStatus = status => {
     setStatusFilter(prev =>
@@ -219,7 +224,7 @@ function UserOrders() {
                     Payment: {order.payment}
                   </p>
 
-                 <p> <Link
+                  <p><Link
                     to={`/orders/${order._id}`}
                     className="inline-block mt-3 text-sm text-indigo-600 font-medium hover:underline"
                   >
@@ -233,7 +238,7 @@ function UserOrders() {
                   </p>
 
                   <p><span
-                    className={`inline-block text-xs px-3 py-1 rounded-full font-semibold ${statusColor(order.status)}`}
+                    className={`inline-block text-xs px-3 py-1 rounded-full font-bold ${statusColor(order.status)}`}
                   >
                     {order.status}
                   </span></p>
@@ -255,7 +260,7 @@ function UserOrders() {
         }`}
       >
         <div
-          className="flex-1 "
+          className="flex-1"
           onClick={() => setShowFilters(false)}
         />
 

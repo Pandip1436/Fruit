@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchOrders, updateOrderStatus } from "../services/api";
 
 const STATUS_TEXT = {
@@ -13,13 +13,17 @@ const TRACK_STEPS = ["Order Placed", "On the way", "Delivered"];
 
 function UserOrderDetails() {
   const { orderId } = useParams();
-  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+  // ✅ FIX: memoize user so it doesn't change every render
+  const user = useMemo(() => {
+    return JSON.parse(localStorage.getItem("loggedInUser"));
+  }, []);
 
   const [order, setOrder] = useState(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.email) return;
 
     fetchOrders().then(data => {
       const found = data.find(
@@ -27,7 +31,7 @@ function UserOrderDetails() {
       );
       if (found) setOrder(found);
     });
-  }, [orderId, user]);
+  }, [orderId, user?.email]); // ✅ depend only on primitive value
 
   if (!order) {
     return (
@@ -65,10 +69,10 @@ function UserOrderDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
 
       {/* HEADER */}
-      <div className="bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3">
           <p className="text-xs sm:text-sm">
             <Link to="/orders" className="font-semibold hover:underline">
