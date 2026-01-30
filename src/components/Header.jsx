@@ -151,7 +151,10 @@ function Header({ cartCount }) {
 
             {user?.role === "admin" && (
               <button
-                onClick={() => navigate("/admin/productlist")}
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/admin/productlist");
+                }}
                 className="rounded-md bg-yellow-500 px-4 py-2 text-white"
               >
                 Admin Dashboard
