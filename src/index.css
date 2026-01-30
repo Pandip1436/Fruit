@@ -3,6 +3,10 @@
 .nav-link {
   @apply text-gray-700 font-medium hover:text-green-600;
 }
+/* index.css */
+body {
+  background-color: #f1f3f6;
+}
 
 .mobile-link {
   @apply block text-gray-700 font-medium border-b pb-2;
