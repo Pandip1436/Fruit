@@ -21,8 +21,14 @@ function AdminOrders() {
   const filteredOrders = orders.filter(
     o =>
       o.user.toLowerCase().includes(search.toLowerCase()) ||
-      o._id.toString().includes(search)
+      o._id.toString().includes(search) ||
+      o.items?.some(item =>
+        item.name.toLowerCase().includes(search.toLowerCase())
+      )
   );
+
+  const getProductNames = order =>
+    order.items?.map(item => item.name).join(", ");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 md:p-6">
@@ -33,7 +39,7 @@ function AdminOrders() {
 
         <input
           className="w-full md:w-80 px-4 py-2 bg-white rounded-lg text-gray-800 outline-none"
-          placeholder="Search by order ID or user email..."
+          placeholder="Search by order ID, user, or product..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
@@ -50,8 +56,8 @@ function AdminOrders() {
             <table className="w-full border-collapse">
               <thead className="bg-gray-100 text-gray-700">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">#</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Order ID</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Order No</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold">Product</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold">User</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold">Total</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold">Status</th>
@@ -66,10 +72,11 @@ function AdminOrders() {
                     className="border-t hover:bg-gray-50 transition"
                   >
                     <td className="px-4 py-3 font-medium">
-                      {index + 1}
+                      {index + 1}.
                     </td>
-                    <td className="px-4 py-3 font-medium">
-                      #{order._id}
+                   
+                    <td className="px-4 py-3 text-sm max-w-[220px] truncate">
+                      {getProductNames(order)}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {order.user}
@@ -105,7 +112,8 @@ function AdminOrders() {
                 className="bg-white rounded-xl shadow p-4 space-y-3"
               >
                 <Row label="S.No" value={index + 1} />
-                <Row label="Order ID" value={`#${order._id}`} />
+                {/* <Row label="Order ID" value={`#${order._id}`} /> */}
+                <Row label="Product" value={getProductNames(order)} />
                 <Row label="User" value={order.user} />
                 <Row
                   label="Total"
@@ -139,9 +147,11 @@ function AdminOrders() {
 /* ================= SMALL ROW COMPONENT ================= */
 function Row({ label, value, valueClass = "" }) {
   return (
-    <div className="flex justify-between text-sm">
+    <div className="flex justify-between text-sm gap-3">
       <span className="font-semibold text-gray-600">{label}:</span>
-      <span className={valueClass}>{value}</span>
+      <span className={`${valueClass} text-right truncate max-w-[180px]`}>
+        {value}
+      </span>
     </div>
   );
 }
