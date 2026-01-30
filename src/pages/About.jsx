@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
 import { motion } from "framer-motion";
 import {
   SparklesIcon,
@@ -40,7 +40,7 @@ function About() {
           About Fruit Shop 🍎
         </h1>
         <p className="mt-4 max-w-2xl mx-auto text-gray-600">
-          Fresh fruits delivered with quality, trust, and and care —
+          Fresh fruits delivered with quality, trust, and care —  
           blending tradition with modern convenience.
         </p>
       </motion.section>
@@ -59,7 +59,7 @@ function About() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
 
-          {/* CARD */}
+          {/* MISSION */}
           <motion.div
             variants={fadeUp}
             className="relative rounded-2xl bg-white/70 backdrop-blur-xl border border-white/60 shadow-xl hover:-translate-y-2 hover:shadow-2xl transition"
@@ -78,7 +78,7 @@ function About() {
             </div>
           </motion.div>
 
-          {/* CARD */}
+          {/* VISION */}
           <motion.div
             variants={fadeUp}
             className="relative rounded-2xl bg-white/70 backdrop-blur-xl border border-white/60 shadow-xl hover:-translate-y-2 hover:shadow-2xl transition"
@@ -114,7 +114,6 @@ function About() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
-          {/* VALUE CARD */}
           {[
             {
               title: "Quality",

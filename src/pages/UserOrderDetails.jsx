@@ -14,7 +14,7 @@ const TRACK_STEPS = ["Order Placed", "On the way", "Delivered"];
 function UserOrderDetails() {
   const { orderId } = useParams();
 
-  // ✅ FIX: memoize user so it doesn't change every render
+  
   const user = useMemo(() => {
     return JSON.parse(localStorage.getItem("loggedInUser"));
   }, []);
@@ -31,7 +31,7 @@ function UserOrderDetails() {
       );
       if (found) setOrder(found);
     });
-  }, [orderId, user?.email]); // ✅ depend only on primitive value
+  }, [orderId, user?.email]); 
 
   if (!order) {
     return (
