@@ -4,34 +4,75 @@ import { Link } from "react-router-dom";
 import { fetchOrders } from "../services/api";
 
 function UserOrders() {
-  // ✅ FIX: Memoize user so it doesn't change every render
-  const user = useMemo(() => {
-    return JSON.parse(localStorage.getItem("loggedInUser"));
-  }, []);
+  // 1. SAFE USER LOADING (Prevents crashes if localStorage is corrupted)
+  const [user] = useState(() => {
+    try {
+      const stored = localStorage.getItem("loggedInUser");
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      return null;
+    }
+  });
 
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true); // Added loading state
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
+  // 2. FETCH DATA
   useEffect(() => {
-    if (!user?.email) return;
+    if (!user?.email) {
+      setLoading(false);
+      return;
+    }
 
-    fetchOrders().then(data => {
-      setOrders(data.filter(o => o.user === user.email));
+    setLoading(true);
+    fetchOrders()
+      .then((data) => {
+        // Filter orders for the current user
+        // Note: Ideally, the backend should filter this for security.
+        const userOrders = data.filter((o) => o.user === user.email);
+        setOrders(userOrders);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch orders", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [user?.email]);
+
+  // 3. HELPER: SAFE DATE FORMATTER (Fixes "Invalid Date")
+  const formatDate = (dateString) => {
+    if (!dateString) return "Date not available";
+
+    const date = new Date(dateString);
+
+    // Check if date is invalid (NaN)
+    if (isNaN(date.getTime())) {
+      return "Invalid Date";
+    }
+
+    return date.toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
-  }, [user?.email]); // ✅ depend on primitive value only
+  };
 
-  const toggleStatus = status => {
-    setStatusFilter(prev =>
+  // 4. FILTER LOGIC
+  const toggleStatus = (status) => {
+    setStatusFilter((prev) =>
       prev.includes(status)
-        ? prev.filter(s => s !== status)
+        ? prev.filter((s) => s !== status)
         : [...prev, status]
     );
   };
 
-  const removeChip = status => {
-    setStatusFilter(prev => prev.filter(s => s !== status));
+  const removeChip = (status) => {
+    setStatusFilter((prev) => prev.filter((s) => s !== status));
   };
 
   const clearFilters = () => {
@@ -39,11 +80,14 @@ function UserOrders() {
   };
 
   const filteredOrders = useMemo(() => {
-    return orders.filter(order => {
+    return orders.filter((order) => {
+      const searchLower = search.toLowerCase();
+      
+      // Safe checks to prevent crashes if order.items is missing
       const matchesSearch =
-        order._id.toLowerCase().includes(search.toLowerCase()) ||
-        order.items?.some(item =>
-          item?.name?.toLowerCase().includes(search.toLowerCase())
+        order._id?.toString().toLowerCase().includes(searchLower) ||
+        order.items?.some((item) =>
+          item?.name?.toLowerCase().includes(searchLower)
         );
 
       const matchesStatus =
@@ -53,255 +97,255 @@ function UserOrders() {
     });
   }, [orders, search, statusFilter]);
 
+  // 5. HELPER: STATUS COLORS
+  const getStatusColor = (status) => {
+    const colors = {
+      Pending: "bg-yellow-100 text-yellow-700",
+      Shipped: "bg-blue-100 text-blue-700",
+      Delivered: "bg-green-100 text-green-700",
+      Cancelled: "bg-red-100 text-red-700",
+    };
+    return colors[status] || "bg-gray-100 text-gray-700";
+  };
+
+  // 6. RENDER: NOT LOGGED IN
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
-        <p className="text-gray-700 text-lg font-semibold">
-          Please login to view orders
-        </p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white p-8 rounded-xl shadow text-center">
+          <p className="text-gray-700 text-lg font-semibold mb-4">
+            Please login to view orders
+          </p>
+          <Link to="/login" className="text-indigo-600 font-bold hover:underline">
+            Go to Login
+          </Link>
+        </div>
       </div>
     );
   }
 
-  const statusColor = status => {
-    switch (status) {
-      case "Pending":
-        return "bg-yellow-100 text-yellow-700";
-      case "Shipped":
-        return "bg-blue-100 text-blue-700";
-      case "Delivered":
-        return "bg-green-100 text-green-700";
-      case "Cancelled":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
-
+  // 7. RENDER: MAIN UI
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-
+    <div className="min-h-screen bg-gray-50 pb-10">
+      
       {/* HEADER */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow">
-        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <h1 className="text-xl sm:text-2xl font-bold mb-3">My Orders</h1>
-
-          <div className="flex bg-white rounded-lg overflow-hidden shadow">
+          <div className="flex bg-white rounded-lg overflow-hidden shadow-inner max-w-2xl">
             <input
               type="text"
-              placeholder="Search by product or order ID"
+              placeholder="Search by product or order ID..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="flex-1 px-3 sm:px-4 py-2 text-sm text-gray-700 outline-none"
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 px-4 py-2 text-sm text-gray-700 outline-none"
             />
-            <button className="bg-indigo-600 px-4 sm:px-6 text-sm font-semibold">
+            <button className="bg-indigo-700 px-6 text-sm font-semibold hover:bg-indigo-800 transition">
               Search
             </button>
           </div>
         </div>
       </div>
 
-      {/* MOBILE STICKY FILTER BAR */}
-      <div className="md:hidden sticky top-0 z-40 bg-white shadow px-4 py-2 flex justify-between items-center">
-        <span className="font-semibold text-sm">
-          Filters {statusFilter.length > 0 && `(${statusFilter.length})`}
+      {/* MOBILE FILTER BAR */}
+      <div className="md:hidden bg-white shadow-sm px-4 py-3 flex justify-between items-center sticky top-[72px] z-20">
+        <span className="font-semibold text-gray-600 text-xs uppercase tracking-wide">
+          {filteredOrders.length} Orders
         </span>
         <button
           onClick={() => setShowFilters(true)}
-          className="text-indigo-600 font-semibold text-sm"
+          className="text-indigo-600 font-semibold text-sm flex items-center gap-1"
         >
-          Open
+          Filters {statusFilter.length > 0 && `(${statusFilter.length})`}
         </button>
       </div>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-6">
-
-        {/* FILTER CHIPS */}
-        {statusFilter.length > 0 && (
-          <div className="mb-4 flex flex-wrap gap-2 transition-all duration-300">
-            {statusFilter.map(status => (
-              <span
-                key={status}
-                className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${statusColor(status)} transition transform hover:scale-105`}
-              >
-                {status}
+      <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
+        
+        {/* DESKTOP SIDEBAR FILTERS */}
+        <div className="hidden md:block w-64 flex-shrink-0">
+          <div className="bg-white rounded-xl shadow-sm p-5 sticky top-24 border border-gray-100">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-gray-800">Filter By Status</h3>
+              {statusFilter.length > 0 && (
                 <button
-                  onClick={() => removeChip(status)}
-                  className="text-xs font-bold"
+                  onClick={clearFilters}
+                  className="text-xs text-red-500 font-semibold hover:underline"
                 >
-                  ✕
+                  Reset
                 </button>
-              </span>
-            ))}
-
-            <button
-              onClick={clearFilters}
-              className="text-sm text-red-600 font-semibold ml-2 hover:underline"
-            >
-              Clear All
-            </button>
+              )}
+            </div>
+            <div className="space-y-2">
+              {["Pending", "Shipped", "Delivered", "Cancelled"].map((status) => (
+                <label key={status} className="flex items-center gap-3 cursor-pointer group hover:bg-gray-50 p-1 rounded transition">
+                  <input
+                    type="checkbox"
+                    className="accent-indigo-600 w-4 h-4"
+                    checked={statusFilter.includes(status)}
+                    onChange={() => toggleStatus(status)}
+                  />
+                  <span className="text-gray-600 text-sm group-hover:text-indigo-600">
+                    {status}
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
-        )}
+        </div>
 
-        {/* PREMIUM DESKTOP FILTERS (STICKY) */}
-        <div className="hidden md:block bg-white rounded-2xl shadow-lg p-5 mb-5 md:float-left md:w-1/4 md:mr-6 md:sticky md:top-20 transition-all duration-300">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-lg">Filters</h3>
-            {statusFilter.length > 0 && (
+        {/* MAIN CONTENT AREA */}
+        <div className="flex-1">
+          
+          {/* Active Filter Chips */}
+          {statusFilter.length > 0 && (
+            <div className="mb-4 flex flex-wrap gap-2">
+              {statusFilter.map((status) => (
+                <span
+                  key={status}
+                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold shadow-sm ${getStatusColor(status)}`}
+                >
+                  {status}
+                  <button onClick={() => removeChip(status)} className="hover:text-black font-bold">
+                    ✕
+                  </button>
+                </span>
+              ))}
+              <button onClick={clearFilters} className="text-xs text-red-500 hover:underline ml-2">Clear All</button>
+            </div>
+          )}
+
+          {/* LOADING SPINNER */}
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            /* EMPTY STATE */
+            <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
+              <div className="text-gray-300 text-6xl mb-4">📦</div>
+              <h3 className="text-lg font-medium text-gray-900">No orders found</h3>
+              <p className="text-gray-500 text-sm mt-1">
+                Try adjusting your search or filters.
+              </p>
+            </div>
+          ) : (
+            /* ORDERS LIST */
+            <div className="space-y-4">
+              {filteredOrders.map((order) => (
+                <div
+                  key={order._id}
+                  className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 flex flex-col sm:flex-row gap-5 transition-all hover:shadow-md"
+                >
+                  {/* Product Image */}
+                  <div className="w-full sm:w-28 h-32 sm:h-28 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden border border-gray-100">
+                    <img
+                      src={order.items?.[0]?.image || "https://placehold.co/150"}
+                      alt={order.items?.[0]?.name}
+                      className="w-full h-full object-contain p-2"
+                      onError={(e) => { e.target.src = "https://placehold.co/150?text=No+Image"; }}
+                    />
+                  </div>
+
+                  {/* Order Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-bold text-gray-900 truncate pr-4 text-base sm:text-lg">
+                          {order.items?.[0]?.name || "Product Name Unavailable"}
+                        </h3>
+                        {order.items?.length > 1 && (
+                          <span className="text-xs text-indigo-600 font-medium">
+                            +{order.items.length - 1} other items
+                          </span>
+                        )}
+                        <p className="text-xs text-gray-400 mt-1 uppercase tracking-wide">
+                          ID: {order._id}
+                        </p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(order.status)}`}>
+                        {order.status}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+                      <div>
+                        {/* ✅ FIX: Try order.date, fallback to order.createdAt */}
+                        <p className="text-xs text-gray-500">
+                          <span className="font-medium">Date:</span> {formatDate(order.date || order.createdAt)}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          <span className="font-medium">Payment:</span> {order.payment}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-gray-900">₹{order.total?.toLocaleString()}</p>
+                        <Link
+                          to={`/orders/${order._id}`}
+                          className="text-sm text-indigo-600 font-bold hover:text-indigo-800 mt-1 inline-flex items-center gap-1"
+                        >
+                          View Details <span>→</span>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* MOBILE SLIDE-OVER MENU */}
+      {showFilters && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowFilters(false)}
+          />
+          <div className="relative w-4/5 max-w-xs bg-white h-full shadow-2xl p-6 flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800">Filters</h2>
+              <button 
+                onClick={() => setShowFilters(false)} 
+                className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="space-y-3 flex-1">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Order Status</p>
+              {["Pending", "Shipped", "Delivered", "Cancelled"].map((status) => (
+                <label key={status} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 active:bg-indigo-50 transition">
+                  <input
+                    type="checkbox"
+                    checked={statusFilter.includes(status)}
+                    onChange={() => toggleStatus(status)}
+                    className="w-5 h-5 accent-indigo-600"
+                  />
+                  <span className="font-medium text-gray-700">{status}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-auto pt-6 flex gap-3">
               <button
                 onClick={clearFilters}
-                className="text-xs text-red-600 font-semibold hover:underline"
+                className="flex-1 py-3 text-red-600 font-semibold border border-red-200 rounded-xl hover:bg-red-50 transition"
               >
                 Clear
               </button>
-            )}
-          </div>
-
-          <p className="text-xs text-gray-500 mb-3 uppercase font-bold tracking-wide">
-            Order Status
-          </p>
-
-          <div className="grid grid-cols-2 gap-2">
-            {["Pending", "Shipped", "Delivered", "Cancelled"].map(status => {
-              const active = statusFilter.includes(status);
-              return (
-                <button
-                  key={status}
-                  onClick={() => toggleStatus(status)}
-                  className={`px-3 py-2 rounded-full text-sm font-medium border transition-all duration-300 transform
-                    ${
-                      active
-                        ? "bg-indigo-600 text-white border-indigo-600 shadow scale-105"
-                        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:scale-105"
-                    }
-                  `}
-                >
-                  {status}
-                </button>
-              );
-            })}
-          </div>
-
-          {statusFilter.length > 0 && (
-            <div className="mt-4 text-sm text-gray-600 transition-all duration-300">
-              Showing{" "}
-              <span className="font-semibold">
-                {statusFilter.length}
-              </span>{" "}
-              filter{statusFilter.length > 1 ? "s" : ""}
-            </div>
-          )}
-        </div>
-
-        {/* ORDERS LIST */}
-        <div className="md:ml-[27%] space-y-4">
-          {filteredOrders.length === 0 ? (
-            <div className="bg-white p-8 text-center rounded-xl shadow">
-              <p className="text-gray-500">No orders found</p>
-            </div>
-          ) : (
-            filteredOrders.map(order => (
-              <div
-                key={order._id}
-                className="bg-white rounded-xl shadow p-4 sm:p-5 flex flex-col sm:flex-row gap-4 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl"
+              <button
+                onClick={() => setShowFilters(false)}
+                className="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow hover:bg-indigo-700 transition"
               >
-                <img
-                  src={order.items?.[0]?.image || "/placeholder.png"}
-                  alt=""
-                  className="w-full sm:w-24 h-32 sm:h-24 object-contain bg-gray-50 rounded-lg"
-                />
-
-                <div className="flex-1">
-                  <h3 className="text-sm sm:text-base font-bold mb-1">
-                    {order.items?.[0]?.name || "Product"}
-                  </h3>
-
-                  <p className="text-xs text-gray-500 mb-1 break-all">
-                    Order ID: {order._id}
-                  </p>
-
-                  <p className="text-xs text-gray-500">
-                    Payment: {order.payment}
-                  </p>
-
-                  <p><Link
-                    to={`/orders/${order._id}`}
-                    className="inline-block mt-3 text-sm text-indigo-600 font-medium hover:underline"
-                  >
-                    View Details →
-                  </Link></p>
-                </div>
-
-                <div className="sm:text-right">
-                  <p className="font-bold text-lg mb-2">
-                    ₹{order.total}
-                  </p>
-
-                  <p><span
-                    className={`inline-block text-xs px-3 py-1 rounded-full font-bold ${statusColor(order.status)}`}
-                  >
-                    {order.status}
-                  </span></p>
-
-                  <p className="text-xs text-gray-400 mt-1">
-                    {order.date}
-                  </p>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* MOBILE SLIDE FILTER PANEL (ANIMATED FIXED) */}
-      <div
-        className={`fixed inset-0 z-50 flex transition-opacity duration-300 ${
-          showFilters ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-      >
-        <div
-          className="flex-1"
-          onClick={() => setShowFilters(false)}
-        />
-
-        <div
-          className={`w-72 bg-white p-5 shadow-xl transform transition-transform duration-300 ${
-            showFilters ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <h3 className="font-semibold text-lg mb-4">Filters</h3>
-
-          {["Pending", "Shipped", "Delivered", "Cancelled"].map(status => (
-            <label
-              key={status}
-              className="flex items-center gap-2 mb-2 text-sm cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={statusFilter.includes(status)}
-                onChange={() => toggleStatus(status)}
-                className="accent-indigo-600"
-              />
-              <span className="text-gray-700">{status}</span>
-            </label>
-          ))}
-
-          <div className="mt-5 flex gap-3">
-            <button
-              onClick={clearFilters}
-              className="flex-1 border border-red-500 text-red-600 py-2 rounded-lg"
-            >
-              Clear
-            </button>
-            <button
-              onClick={() => setShowFilters(false)}
-              className="flex-1 bg-indigo-600 text-white py-2 rounded-lg"
-            >
-              Apply
-            </button>
+                Apply
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

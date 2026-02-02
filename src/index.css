@@ -3,6 +3,12 @@
 .nav-link {
   @apply text-gray-700 font-medium hover:text-green-600;
 }
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* index.css */
 body {
   background-color: #f1f3f6;

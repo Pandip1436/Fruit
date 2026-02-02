@@ -33,7 +33,7 @@ function Header({ cartCount }) {
   return (
     <header className="sticky top-0 z-50 bg-green-500 shadow-sm">
       <nav className="mx-auto max-w-8xl px-7">
-        <div className="flex h-[72px] items-center justify-between">
+        <div className="flex h-18 items-center justify-between">
 
           {/* LOGO (LEFT) */}
           <Link to="/" className="flex items-center gap-2 text-xl font-bold text-white">

@@ -42,7 +42,7 @@ function Landing({ cart, setCart, showToast }) {
   };
 
   return (
-    <div className="bg-gradient-to-b from-green-50 via-white to-green-100 overflow-hidden">
+    <div className="bg-linear-to-b from-green-50 via-white to-green-100 overflow-hidden">
 
       {/* ================= HERO ================= */}
       <section className="max-w-7xl mx-auto px-6 py-28 grid lg:grid-cols-2 gap-16 items-center">
@@ -54,7 +54,7 @@ function Landing({ cart, setCart, showToast }) {
 
           <h1 className="text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
             Healthy Living <br />
-            <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
               Starts With Fresh Fruits
             </span>
           </h1>
@@ -96,7 +96,7 @@ function Landing({ cart, setCart, showToast }) {
           <img
             src="https://images.unsplash.com/photo-1573246123716-6b1782bfc499"
             alt="Fresh Fruits"
-            className="rounded-[2rem] shadow-2xl"
+            className="rounded-4xl shadow-2xl"
           />
         </motion.div>
       </section>
@@ -159,7 +159,7 @@ We believe that good health starts with good food. That’s why every fruit we d
               key={product._id}
               className="group relative rounded-3xl bg-white/70 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all overflow-hidden"
             >
-              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-green-400 to-emerald-500" />
+              <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-green-400 to-emerald-500" />
 
               <div className="relative h-40 sm:h-52 overflow-hidden">
                 <img
@@ -229,7 +229,7 @@ We believe that good health starts with good food. That’s why every fruit we d
             </div>
           </div>
 
-          <div className="w-full h-[360px] rounded-[2rem] overflow-hidden shadow-xl border">
+          <div className="w-full h-90 rounded-4xl overflow-hidden shadow-xl border">
             <iframe
               title="Store Location"
               src="https://www.google.com/maps?q=Malli%20Police%20Station&output=embed"
