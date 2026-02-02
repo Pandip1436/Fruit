@@ -137,9 +137,9 @@ function UserOrderDetails() {
               <p className="text-2xl font-black text-gray-900 mt-3">₹{order.total?.toLocaleString()}</p>
             </div>
             <div className="sm:text-right">
-              <span className={`inline-block rounded-full px-4 py-1 text-xs font-bold ${getStatusColor(order.status)}`}>
+             <p> <span className={`inline-block rounded-full px-4 py-1 text-xs font-bold ${getStatusColor(order.status)}`}>
                 {STATUS_TEXT[order.status]}
-              </span>
+              </span></p>
               <p className="text-xs text-gray-400 mt-2">{formatDate(order.date || order.createdAt)}</p>
               {order.status === "Delivered" && (
                 <button className="text-xs text-indigo-600 font-bold mt-3 block w-full sm:w-auto hover:bg-indigo-50 px-2 py-1 rounded">
@@ -185,7 +185,7 @@ function UserOrderDetails() {
                     <p className="font-medium text-gray-800">{item.name}</p>
                     <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                   </div>
-                  <span className="font-bold text-gray-900 whitespace-nowrap">
+                  <span className="font-bold text-gray-900 py-3 whitespace-nowrap">
                     ₹{(item.price * item.quantity).toLocaleString()}
                   </span>
                 </div>
