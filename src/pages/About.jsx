@@ -100,7 +100,7 @@ function About() {
             
             <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4">
               <div className="flex gap-4">
-                <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                   <GlobeAltIcon className="h-5 w-5" />
                 </div>
                 <div>
@@ -109,7 +109,7 @@ function About() {
                 </div>
               </div>
               <div className="flex gap-4">
-                <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                   <ShieldCheckIcon className="h-5 w-5" />
                 </div>
                 <div>
@@ -126,11 +126,11 @@ function About() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="relative"
           >
-            <div className="absolute -inset-6 bg-emerald-50 rounded-[3rem] -z-10 rotate-3" />
+            <div className="absolute -inset-6 bg-emerald-50 rounded-[3rem] -z-8 " />
             <img 
               src="https://images.unsplash.com/photo-1609780447631-05b93e5a88ea?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZnJ1aXQlMjBzaG9wfGVufDB8fDB8fHww" 
               alt="Fresh Produce" 
-              className="rounded-[2.5rem] shadow-2xl object-cover h-[600px] w-full"
+              className="rounded-[2.5rem] shadow-2xl object-cover h-150 w-full"
             />
           </motion.div>
         </div>
