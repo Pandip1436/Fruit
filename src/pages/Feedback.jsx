@@ -114,7 +114,7 @@ function Feedback() {
                       type="text"
                       name="phone"
                       value={form.phone}
-                      placeholder="+91..."
+                      placeholder="Enter Phone Number"
                       onChange={handleChange}
                       className="w-full bg-transparent px-3 py-4 outline-none text-sm font-medium"
                     />
