@@ -98,7 +98,7 @@ function Feedback() {
                     name="name"
                     required
                     value={form.name}
-                    placeholder="Mani"
+                    placeholder="Enter Your Name"
                     onChange={handleChange}
                     className="w-full bg-transparent px-3 py-4 outline-none text-sm font-medium"
                   />
@@ -129,7 +129,7 @@ function Feedback() {
                       name="location"
                       required
                       value={form.location}
-                      placeholder="Malli"
+                      placeholder="Enter Location"
                       onChange={handleChange}
                       className="w-full bg-transparent px-3 py-4 outline-none text-sm font-medium"
                     />
